@@ -21,9 +21,9 @@ func (t IntMat) String() string {
 	return s
 }
 
-func genMatrix(size int, maxRange int) (matrix IntMat) {
-	for i := 0; i < size; i++ {
-		for j := 0; j < size; j++ {
+func genMatrix(maxRange int) (matrix IntMat) {
+	for i := 0; i < defaultSize; i++ {
+		for j := 0; j < defaultSize; j++ {
 			matrix[i][j] = rand.Intn(maxRange)
 		}
 	}
@@ -54,8 +54,8 @@ func main() {
 	maxRange := 100
 	start := time.Now()
 
-	m1 := genMatrix(defaultSize, maxRange)
-	m2 := genMatrix(defaultSize, maxRange)
+	m1 := genMatrix(maxRange)
+	m2 := genMatrix(maxRange)
 
 	stop := time.Since(start)
 	timeSplits = append(timeSplits, stop.Microseconds())
