@@ -21,10 +21,10 @@ func matrix2String(t IntMat) string {
 	return s
 }
 
-func genMatrix(size int, maxRange int)(matrix IntMat){
-	for i:=0; i<size; i++ {
+func genMatrix(size int, maxRange int) (matrix IntMat) {
+	for i := 0; i < size; i++ {
 		var row [defaultSize]int
-		for j:=0; j<size; j++ {
+		for j := 0; j < size; j++ {
 			row[j] = rand.Intn(maxRange)
 		}
 		matrix[i] = row
@@ -40,11 +40,11 @@ func makeRange(min, max int) []int {
 	return a
 }
 
-func randomPermutation(size int)[]int{
-	_range:=makeRange(0,size)
+func randomPermutation(size int) []int {
+	_range := makeRange(0, size)
 	result := make([]int, size)
-	for i:=0; i<size; i++ {
-		j := rand.Intn(size-i)
+	for i := 0; i < size; i++ {
+		j := rand.Intn(size - i)
 		result[i] = _range[j]
 		_range[j] = _range[len(_range)-1]
 		_range = _range[:len(_range)-1]
@@ -61,7 +61,7 @@ func main() {
 	m2 := genMatrix(defaultSize, maxRange)
 
 	stop := time.Since(start)
-	timeSplits = append(timeSplits,stop.Microseconds())
+	timeSplits = append(timeSplits, stop.Microseconds())
 
 	fmt.Println(matrix2String(m1))
 	fmt.Println(matrix2String(m2))
