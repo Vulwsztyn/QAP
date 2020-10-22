@@ -45,7 +45,6 @@ func randomPermutation(size int) []int {
 		j := rand.Intn(size - i)
 		result[i] = _range[j]
 		_range[j] = _range[len(_range)-1]
-		_range = _range[:len(_range)-1]
 	}
 	return result
 }
