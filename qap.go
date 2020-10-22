@@ -23,11 +23,9 @@ func matrix2String(t IntMat) string {
 
 func genMatrix(size int, maxRange int) (matrix IntMat) {
 	for i := 0; i < size; i++ {
-		var row [defaultSize]int
 		for j := 0; j < size; j++ {
-			row[j] = rand.Intn(maxRange)
+			matrix[i][j] = rand.Intn(maxRange)
 		}
-		matrix[i] = row
 	}
 	return
 }
