@@ -12,8 +12,8 @@ type IntMat [defaultSize][defaultSize]int
 
 func matrix2String(t IntMat) string {
 	s := ""
-	for i := range t {
-		for _, n := range t[i] {
+	for _, row := range t {
+		for _, n := range row {
 			s += fmt.Sprintf("%d ", n)
 		}
 		s += fmt.Sprintln()
