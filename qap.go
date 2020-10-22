@@ -52,6 +52,13 @@ func randomPermutation(size int) []int {
 	return result
 }
 
+func measureTime(fn func()) int64 {
+	start := time.Now()
+	fn()
+	stop := time.Since(start)
+	return stop.Microseconds()
+}
+
 func main() {
 	var timeSplits []int64
 	maxRange := 100
@@ -71,4 +78,9 @@ func main() {
 	fmt.Println(randomPermutation(8))
 	fmt.Println(randomPermutation(8))
 	fmt.Println(randomPermutation(8))
+
+	timeOfGeneration := measureTime(func() {
+		randomPermutation(999999)
+	})
+	fmt.Println(timeOfGeneration)
 }
