@@ -10,7 +10,7 @@ const defaultSize = 10
 
 type IntMat [defaultSize][defaultSize]int
 
-func matrix2String(t IntMat) string {
+func (t IntMat) String() string {
 	s := ""
 	for _, row := range t {
 		for _, n := range row {
@@ -60,8 +60,8 @@ func main() {
 	stop := time.Since(start)
 	timeSplits = append(timeSplits, stop.Microseconds())
 
-	fmt.Println(matrix2String(m1))
-	fmt.Println(matrix2String(m2))
+	fmt.Println(m1)
+	fmt.Println(m2)
 
 	fmt.Println(timeSplits)
 
