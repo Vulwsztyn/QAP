@@ -31,11 +31,11 @@ func genMatrix(size int, maxRange int) (matrix IntMat) {
 }
 
 func makeRange(min, max int) []int {
-	a := make([]int, max-min)
-	for i := range a {
-		a[i] = min + i
+	_range := make([]int, max-min)
+	for i := range _range {
+		_range[i] = min + i
 	}
-	return a
+	return _range
 }
 
 func randomPermutation(size int) []int {
