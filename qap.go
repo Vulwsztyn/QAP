@@ -15,7 +15,7 @@ const defaultSize = 26
 
 type IntMat [defaultSize][defaultSize]int
 
-func fileReader(fileName string)(m1 IntMat, m2 IntMat){
+func fileReader(fileName string) (m1 IntMat, m2 IntMat) {
 	f, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -28,8 +28,8 @@ func fileReader(fileName string)(m1 IntMat, m2 IntMat){
 		}
 	}()
 
-	rowNum:=0
-	whichMatrix:=1
+	rowNum := 0
+	whichMatrix := 1
 	scanner := bufio.NewScanner(f)
 
 	scanner.Scan()
@@ -37,19 +37,19 @@ func fileReader(fileName string)(m1 IntMat, m2 IntMat){
 
 	for scanner.Scan() {
 		row := strings.Fields(strings.TrimSpace(scanner.Text()))
-		if len(row)<instanceSize {
+		if len(row) < instanceSize {
 			continue
 		}
-		for i,v := range row{
-			if whichMatrix==1 {
+		for i, v := range row {
+			if whichMatrix == 1 {
 				m1[rowNum][i], _ = strconv.Atoi(v)
 			} else {
 				m2[rowNum][i], _ = strconv.Atoi(v)
 			}
 		}
 		rowNum++
-		if rowNum>=instanceSize{
-			rowNum=0
+		if rowNum >= instanceSize {
+			rowNum = 0
 			whichMatrix++
 		}
 	}
