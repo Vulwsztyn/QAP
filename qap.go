@@ -121,6 +121,28 @@ func measureTime(fn func()) int64 {
 	return stop.Microseconds()
 }
 
+func sliceVsArrayTest() {
+	start := time.Now()
+	for i := 0; i < 1000000; i++ {
+		test := make([]int, 10000)
+		test[0] = 8
+		test[9999] = 8
+	}
+	stop := time.Since(start)
+	//wyszło 6.659 sekundy
+	fmt.Println(stop.Milliseconds())
+
+	start = time.Now()
+	for i := 0; i < 1000000; i++ {
+		var test [10000]int
+		test[0] = 8
+		test[9999] = 8
+	}
+	stop = time.Since(start)
+	//vs 0.001 sekundy
+	fmt.Println(stop.Milliseconds())
+}
+
 func main() {
 	var timeSplits []int64
 	maxRange := 5
@@ -143,4 +165,6 @@ func main() {
 	fmt.Println(testAssignment)
 	fmt.Println(calcCost(testAssignment, m1, m2))
 	//fmt.Println(fileReader("instances/chr12a.dat"))
+
+	sliceVsArrayTest()
 }
