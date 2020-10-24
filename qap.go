@@ -70,16 +70,16 @@ func (t IntMat) String() string {
 	return s
 }
 
-func translateAssignment(assignment [defaultSize]int) (result [defaultSize]int){
-	for i:=0; i<defaultSize; i++ {
+func translateAssignment(assignment [defaultSize]int) (result [defaultSize]int) {
+	for i := 0; i < defaultSize; i++ {
 		result[assignment[i]] = i
 	}
 	return
 }
 
-func calcCost(assignment [defaultSize]int ,m1 IntMat, m2 IntMat) (result int){
-	for i:=0; i<defaultSize; i++ {
-		for j:=0; j<defaultSize; j++ {
+func calcCost(assignment [defaultSize]int, m1 IntMat, m2 IntMat) (result int) {
+	for i := 0; i < defaultSize; i++ {
+		for j := 0; j < defaultSize; j++ {
 			result += m1[assignment[i]][assignment[j]] * m2[i][j]
 		}
 	}
@@ -134,13 +134,13 @@ func main() {
 
 	fmt.Println(timeSplits)
 
-	testAssignment:=randomPermutation()
+	testAssignment := randomPermutation()
 	fmt.Println(testAssignment)
 	fmt.Println(translateAssignment(testAssignment))
 
 	fmt.Println(m1)
 	fmt.Println(m2)
 	fmt.Println(testAssignment)
-	fmt.Println(calcCost(testAssignment,m1,m2))
+	fmt.Println(calcCost(testAssignment, m1, m2))
 	//fmt.Println(fileReader("instances/chr12a.dat"))
 }
