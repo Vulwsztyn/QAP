@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const defaultSize = 26
+const defaultSize = 3
 
 type IntMat [defaultSize][defaultSize]int
 
@@ -70,6 +70,22 @@ func (t IntMat) String() string {
 	return s
 }
 
+func translateAssignment(assignment [defaultSize]int) (result [defaultSize]int) {
+	for i := 0; i < defaultSize; i++ {
+		result[assignment[i]] = i
+	}
+	return
+}
+
+func calcCost(assignment [defaultSize]int, m1 IntMat, m2 IntMat) (result int) {
+	for i := 0; i < defaultSize; i++ {
+		for j := 0; j < defaultSize; j++ {
+			result += m1[assignment[i]][assignment[j]] * m2[i][j]
+		}
+	}
+	return
+}
+
 func NewRandomMatrix(maxRange int) (matrix IntMat) {
 	for i := 0; i < defaultSize; i++ {
 		for j := 0; j < defaultSize; j++ {
@@ -87,13 +103,13 @@ func makeRange(min, max int) []int {
 	return _range
 }
 
-func randomPermutation(size int) []int {
-	_range := makeRange(0, size)
-	result := make([]int, size)
-	for i := 0; i < size; i++ {
-		j := rand.Intn(size - i)
+func randomPermutation() [defaultSize]int {
+	_range := makeRange(0, defaultSize)
+	var result [defaultSize]int
+	for i := 0; i < defaultSize; i++ {
+		j := rand.Intn(defaultSize - i)
 		result[i] = _range[j]
-		_range[j] = _range[len(_range)-1]
+		_range[j] = _range[len(_range)-1-i]
 	}
 	return result
 }
@@ -107,7 +123,7 @@ func measureTime(fn func()) int64 {
 
 func main() {
 	var timeSplits []int64
-	maxRange := 100
+	maxRange := 5
 	start := time.Now()
 
 	m1 := NewRandomMatrix(maxRange)
@@ -116,19 +132,15 @@ func main() {
 	stop := time.Since(start)
 	timeSplits = append(timeSplits, stop.Microseconds())
 
-	fmt.Println(m1)
-	fmt.Println(m2)
-
 	fmt.Println(timeSplits)
 
-	fmt.Println(randomPermutation(8))
-	fmt.Println(randomPermutation(8))
-	fmt.Println(randomPermutation(8))
+	testAssignment := randomPermutation()
+	fmt.Println(testAssignment)
+	fmt.Println(translateAssignment(testAssignment))
 
-	timeOfGeneration := measureTime(func() {
-		randomPermutation(999999)
-	})
-	fmt.Println(timeOfGeneration)
-
-	fmt.Println(fileReader("instances/bur26a.dat"))
+	fmt.Println(m1)
+	fmt.Println(m2)
+	fmt.Println(testAssignment)
+	fmt.Println(calcCost(testAssignment, m1, m2))
+	//fmt.Println(fileReader("instances/chr12a.dat"))
 }
