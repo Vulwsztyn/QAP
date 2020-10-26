@@ -1,74 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"log"
 	"math/rand"
-	"os"
-	"strconv"
-	"strings"
 	"time"
 )
 
 const defaultSize = 3
-
-type IntMat [defaultSize][defaultSize]int
-
-func fileReader(fileName string) (m1 IntMat, m2 IntMat) {
-	f, err := os.Open(fileName)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer func() {
-		err := f.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	rowNum := 0
-	whichMatrix := 1
-	scanner := bufio.NewScanner(f)
-
-	scanner.Scan()
-	instanceSize, _ := strconv.Atoi(strings.TrimSpace(scanner.Text()))
-
-	for scanner.Scan() {
-		row := strings.Fields(strings.TrimSpace(scanner.Text()))
-		if len(row) < instanceSize {
-			continue
-		}
-		for i, v := range row {
-			if whichMatrix == 1 {
-				m1[rowNum][i], _ = strconv.Atoi(v)
-			} else {
-				m2[rowNum][i], _ = strconv.Atoi(v)
-			}
-		}
-		rowNum++
-		if rowNum >= instanceSize {
-			rowNum = 0
-			whichMatrix++
-		}
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-	return
-}
-
-func (t IntMat) String() string {
-	s := ""
-	for _, row := range t {
-		for _, n := range row {
-			s += fmt.Sprintf("%d ", n)
-		}
-		s += fmt.Sprintln()
-	}
-	return s
-}
 
 func translateAssignment(assignment [defaultSize]int) (result [defaultSize]int) {
 	for i := 0; i < defaultSize; i++ {
@@ -81,15 +19,6 @@ func calcCost(assignment [defaultSize]int, m1 IntMat, m2 IntMat) (result int) {
 	for i := 0; i < defaultSize; i++ {
 		for j := 0; j < defaultSize; j++ {
 			result += m1[assignment[i]][assignment[j]] * m2[i][j]
-		}
-	}
-	return
-}
-
-func NewRandomMatrix(maxRange int) (matrix IntMat) {
-	for i := 0; i < defaultSize; i++ {
-		for j := 0; j < defaultSize; j++ {
-			matrix[i][j] = rand.Intn(maxRange)
 		}
 	}
 	return
@@ -112,13 +41,6 @@ func randomPermutation() [defaultSize]int {
 		_range[j] = _range[len(_range)-1-i]
 	}
 	return result
-}
-
-func measureTime(fn func()) int64 {
-	start := time.Now()
-	fn()
-	stop := time.Since(start)
-	return stop.Microseconds()
 }
 
 func main() {
