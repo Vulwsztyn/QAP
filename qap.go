@@ -6,17 +6,8 @@ import (
 	"time"
 )
 
-const defaultSize = 10
+const defaultSize = 5
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
-
-type Assignment = [defaultSize]int
-
-func translateAssignment(assignment [defaultSize]int) (result [defaultSize]int) {
-	for i := 0; i < defaultSize; i++ {
-		result[assignment[i]] = i
-	}
-	return
-}
 
 func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int) {
 	for i := 0; i < defaultSize; i++ {
@@ -73,8 +64,9 @@ func main() {
 	fmt.Println(timeSplits)
 
 	testAssignment := randomPermutation()
+	testAssignment = Assignment{1,0,2,3,4}
 	fmt.Println(testAssignment)
-	fmt.Println(translateAssignment(testAssignment))
+	fmt.Println(testAssignment.translateAssignment())
 
 	fmt.Println(m1)
 	fmt.Println(m2)
@@ -86,4 +78,5 @@ func main() {
 	for _,v := range createNeighbours(testAssignment) {
 		fmt.Println(v)
 	}
+	fmt.Println(testAssignment.any(func(a int) bool {return a == 4 }))
 }
