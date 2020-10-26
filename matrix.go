@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"sort"
 )
 
 type IntMat [defaultSize][defaultSize]int
@@ -35,4 +36,19 @@ func (m1 IntMat) String() string {
 		s += fmt.Sprintln()
 	}
 	return s
+}
+
+func (m1 IntMat) toArray() (result ValueWithCoordsArray) {
+	for i, row := range m1 {
+		for j, n := range row {
+			result[i*defaultSize+j] = [3]int{n, i, j}
+		}
+	}
+	return
+}
+
+func (m1 IntMat) elemsSorted() (result ValueWithCoordsArray) {
+	tmp := m1.toArray()
+	sort.Sort(sort.Reverse(&tmp))
+	return tmp
 }

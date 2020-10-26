@@ -81,4 +81,6 @@ func main() {
 		fmt.Println(v)
 	}
 	fmt.Println(testAssignment.any(func(a int) bool {return a == 4 }))
+	fmt.Println(m1.toArray())
+	fmt.Println(m1.elemsSorted())
 }
