@@ -52,11 +52,12 @@ func createNeighbours(assignment Assignment) (result [neighbourCount]Assignment)
 
 func main() {
 	var timeSplits []int64
-	maxRange := 5
+	maxRange := 1000
+	minRange := 100
 	start := time.Now()
 
-	m1 := NewRandomMatrix(maxRange)
-	m2 := NewRandomMatrix(maxRange)
+	m1 := NewRandomMatrix(maxRange, minRange)
+	m2 := NewRandomMatrix(maxRange, minRange)
 
 	stop := time.Since(start)
 	timeSplits = append(timeSplits, stop.Microseconds())
@@ -69,6 +70,7 @@ func main() {
 	fmt.Println(testAssignment.translateAssignment())
 
 	fmt.Println(m1)
+	fmt.Println(m1.permuteMatrix(testAssignment))
 	fmt.Println(m2)
 	fmt.Println(testAssignment)
 	fmt.Println(calcCost(testAssignment, m1, m2))

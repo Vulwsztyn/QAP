@@ -7,18 +7,28 @@ import (
 
 type IntMat [defaultSize][defaultSize]int
 
-func NewRandomMatrix(maxRange int) (matrix IntMat) {
+func NewRandomMatrix(maxRange int, minRange int) (matrix IntMat) {
+	delta := maxRange - minRange
 	for i := 0; i < defaultSize; i++ {
 		for j := 0; j < defaultSize; j++ {
-			matrix[i][j] = rand.Intn(maxRange)
+			matrix[i][j] = rand.Intn(delta) + minRange
 		}
 	}
 	return
 }
 
-func (t IntMat) String() string {
+func (m1 IntMat) permuteMatrix(assignment Assignment) (matrix IntMat) {
+	for i := 0; i < defaultSize; i++ {
+		for j := 0; j < defaultSize; j++ {
+			matrix[i][j] = m1[assignment[i]][assignment[j]]
+		}
+	}
+	return
+}
+
+func (m1 IntMat) String() string {
 	s := ""
-	for _, row := range t {
+	for _, row := range m1 {
 		for _, n := range row {
 			s += fmt.Sprintf("%d ", n)
 		}
