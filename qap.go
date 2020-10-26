@@ -6,7 +6,10 @@ import (
 	"time"
 )
 
-const defaultSize = 3
+const defaultSize = 10
+const neighbourCount = defaultSize * (defaultSize - 1) / 2
+
+type Assignment = [defaultSize]int
 
 func translateAssignment(assignment [defaultSize]int) (result [defaultSize]int) {
 	for i := 0; i < defaultSize; i++ {
@@ -15,7 +18,7 @@ func translateAssignment(assignment [defaultSize]int) (result [defaultSize]int) 
 	return
 }
 
-func calcCost(assignment [defaultSize]int, m1 IntMat, m2 IntMat) (result int) {
+func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int) {
 	for i := 0; i < defaultSize; i++ {
 		for j := 0; j < defaultSize; j++ {
 			result += m1[assignment[i]][assignment[j]] * m2[i][j]
@@ -32,7 +35,7 @@ func makeRange(min, max int) []int {
 	return _range
 }
 
-func randomPermutation() [defaultSize]int {
+func randomPermutation() Assignment {
 	_range := makeRange(0, defaultSize)
 	var result [defaultSize]int
 	for i := 0; i < defaultSize; i++ {
@@ -41,6 +44,19 @@ func randomPermutation() [defaultSize]int {
 		_range[j] = _range[len(_range)-1-i]
 	}
 	return result
+}
+
+func createNeighbours(assignment Assignment) (result [neighbourCount]Assignment) {
+	index := 0
+	for i := 0; i < defaultSize-1; i++ {
+		for j := i + 1; j < defaultSize; j++ {
+			tmp := assignment
+			tmp[i], tmp[j] = tmp[j], tmp[i]
+			result[index] = tmp
+			index++
+		}
+	}
+	return
 }
 
 func main() {
@@ -65,4 +81,9 @@ func main() {
 	fmt.Println(testAssignment)
 	fmt.Println(calcCost(testAssignment, m1, m2))
 	//fmt.Println(fileReader("instances/chr12a.dat"))
+
+	fmt.Println(testAssignment)
+	for _,v := range createNeighbours(testAssignment) {
+		fmt.Println(v)
+	}
 }
