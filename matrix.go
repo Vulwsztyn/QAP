@@ -49,6 +49,6 @@ func (m1 IntMat) toArray() (result ValueWithCoordsArray) {
 
 func (m1 IntMat) elemsSorted() (result ValueWithCoordsArray) {
 	tmp := m1.toArray()
-	sort.Sort(sort.Reverse(&tmp))
+	sort.Sort(&tmp)
 	return tmp
 }
