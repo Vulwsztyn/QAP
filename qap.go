@@ -3,16 +3,46 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"time"
 )
 
-const defaultSize = 30
+const defaultSize = 12
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
-func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int) {
+func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
+	currentAssignment := randomPermutation()
+	bestCost, _ := calcCost(currentAssignment, m1, m2)
+	bestNeighbourCost := bestCost - 1
+	bestNeighbourIndex := 0
+	for bestNeighbourCost < bestCost {
+		bestCost, _ = calcCost(currentAssignment, m1, m2)
+		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2)
+		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
+		currentAssignment = neighbours[bestNeighbourIndex]
+		bestCost = bestNeighbourCost
+	}
+	fmt.Println(bestCost, currentAssignment)
+	return currentAssignment, bestCost
+}
+
+func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
+	index := 0
+	for i := 0; i < defaultSize-1; i++ {
+		for j := i + 1; j < defaultSize; j++ {
+			tmp := assignment
+			tmp[i], tmp[j] = tmp[j], tmp[i]
+			costs[index], _ = calcCost(tmp, m1, m2)
+			result[index] = tmp
+			index++
+		}
+	}
+	return
+}
+
+func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int, costMatrix IntMat) {
 	for i := 0; i < defaultSize; i++ {
 		for j := 0; j < defaultSize; j++ {
-			result += m1[assignment[i]][assignment[j]] * m2[i][j]
+			costMatrix[i][j] = m1[assignment[i]][assignment[j]] * m2[i][j]
+			result += costMatrix[i][j]
 		}
 	}
 	return
@@ -35,19 +65,6 @@ func randomPermutation() Assignment {
 		_range[j] = _range[len(_range)-1-i]
 	}
 	return result
-}
-
-func createNeighbours(assignment Assignment) (result [neighbourCount]Assignment) {
-	index := 0
-	for i := 0; i < defaultSize-1; i++ {
-		for j := i + 1; j < defaultSize; j++ {
-			tmp := assignment
-			tmp[i], tmp[j] = tmp[j], tmp[i]
-			result[index] = tmp
-			index++
-		}
-	}
-	return
 }
 
 func equals(value int) func(int) bool {
@@ -135,39 +152,12 @@ func greedy(m1, m2 IntMat) (Assignment, Assignment) {
 }
 
 func main() {
-	rand.Seed(123)
-	var timeSplits []int64
-	maxRange := 1000
-	minRange := 100
-	start := time.Now()
-		m1 := NewRandomMatrix(maxRange, minRange)
-		m2 := NewRandomMatrix(maxRange, minRange)
-
-		stop := time.Since(start)
-		timeSplits = append(timeSplits, stop.Microseconds())
-
-		fmt.Println(timeSplits)
-
-		testAssignment := randomPermutation()
-		//testAssignment := Assignment{1, 4, 2, 3, 0}
-		//fmt.Println(testAssignment)
-		//fmt.Println(testAssignment.translateAssignment())
-		//
-		fmt.Println(m1)
-
-		fmt.Println(m2)
-		fmt.Println(m1.permuteMatrix(testAssignment))
-		//fmt.Println(testAssignment)
-		//fmt.Println(calcCost(testAssignment, m1, m2))
-		//fmt.Println(fileReader("instances/chr12a.dat"))
-
-		//fmt.Println(testAssignment)
-		//for _,v := range createNeighbours(testAssignment) {
-		//	fmt.Println(v)
-		//}
-		//fmt.Println(testAssignment.any(func(a int) bool {return a == 4 }))
-		a1, a2 := greedy(m1, m2)
-		fmt.Println(a1, a2)
-
-
+	m2, m1 := fileReader("instances/nug12.dat")
+	fmt.Println(m1)
+	fmt.Println(m2)
+	for i := 0; i < 100; i++ {
+		steepest(m1, m2)
+	}
+	cost, _ := calcCost(Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}, m1, m2)
+	fmt.Println(cost)
 }
