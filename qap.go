@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-const defaultSize = 12
+const defaultSize = 4
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
 func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
@@ -13,7 +13,7 @@ func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
 	var bestCost, bestNeighbourCost, bestNeighbourIndex int
 	for ok := true; ok; ok = bestNeighbourCost < bestCost {
 		bestCost, _ = calcCost(currentAssignment, m1, m2)
-		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2)
+		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, rand.Intn(defaultSize))
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
 	}
@@ -21,16 +21,20 @@ func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
 	return currentAssignment, bestCost
 }
 
-func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
+func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
 	index := 0
-	for i := 0; i < defaultSize-1; i++ {
-		for j := i + 1; j < defaultSize; j++ {
+	iCount := 0
+	for i := startIndex; iCount < defaultSize-1; i++ {
+		jCount := iCount + 1
+		for j := i%defaultSize + 1; jCount < defaultSize; j++ {
 			tmp := assignment
-			tmp[i], tmp[j] = tmp[j], tmp[i]
+			tmp[i%defaultSize], tmp[j%defaultSize] = tmp[j%defaultSize], tmp[i%defaultSize]
 			costs[index], _ = calcCost(tmp, m1, m2)
 			result[index] = tmp
 			index++
+			jCount++
 		}
+		iCount++
 	}
 	return
 }
@@ -149,12 +153,14 @@ func greedy(m1, m2 IntMat) (Assignment, Assignment) {
 }
 
 func main() {
-	m1, m2 := fileReader("instances/nug12.dat")
-	fmt.Println(m1)
-	fmt.Println(m2)
-	for i := 0; i < 100; i++ {
-		steepest(m1, m2)
-	}
-	cost, _ := calcCost(Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate(), m1, m2)
-	fmt.Println(cost, Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate())
+	//m1, m2 := fileReader("instances/nug12.dat")
+	//fmt.Println(m1)
+	//fmt.Println(m2)
+	//for i := 0; i < 100; i++ {
+	//	steepest(m1, m2)
+	//}
+	//cost, _ := calcCost(Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate(), m1, m2)
+	//fmt.Println(cost, Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate())
+
+	createNeighbours(Assignment{0, 1, 2, 3}, NewRandomMatrix(5, 0), NewRandomMatrix(5, 0), 0)
 }
