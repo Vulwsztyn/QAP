@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-const defaultSize = 4
+const defaultSize = 5
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
 func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
@@ -21,18 +21,26 @@ func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
 	return currentAssignment, bestCost
 }
 
+func positiveReminder(a,b int) (result int) {
+	result = a % b
+	if result < 0 {
+		result += b
+	}
+	return
+}
+
 func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
 	index := 0
 	iCount := 0
-	for i := startIndex; iCount < defaultSize-1; i++ {
-		jCount := iCount + 1
-		for j := i%defaultSize + 1; jCount < defaultSize; j++ {
+	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
+		fmt.Println(i)
+		for j := (i + 1) % defaultSize; j != positiveReminder(i - iCount, defaultSize); j = (j + 1) % defaultSize {
 			tmp := assignment
-			tmp[i%defaultSize], tmp[j%defaultSize] = tmp[j%defaultSize], tmp[i%defaultSize]
+			tmp[i], tmp[j] = tmp[j], tmp[i]
+			fmt.Println(i, j)
 			costs[index], _ = calcCost(tmp, m1, m2)
 			result[index] = tmp
 			index++
-			jCount++
 		}
 		iCount++
 	}
@@ -162,5 +170,5 @@ func main() {
 	//cost, _ := calcCost(Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate(), m1, m2)
 	//fmt.Println(cost, Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate())
 
-	createNeighbours(Assignment{0, 1, 2, 3}, NewRandomMatrix(5, 0), NewRandomMatrix(5, 0), 0)
+	createNeighbours(Assignment{0, 1, 2, 3}, NewRandomMatrix(5, 0), NewRandomMatrix(5, 0), 3)
 }
