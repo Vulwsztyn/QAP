@@ -18,7 +18,6 @@ func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
 		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2)
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
-		bestCost = bestNeighbourCost
 	}
 	fmt.Println(bestCost, currentAssignment)
 	return currentAssignment, bestCost
@@ -152,12 +151,12 @@ func greedy(m1, m2 IntMat) (Assignment, Assignment) {
 }
 
 func main() {
-	m2, m1 := fileReader("instances/nug12.dat")
+	m1, m2 := fileReader("instances/nug12.dat")
 	fmt.Println(m1)
 	fmt.Println(m2)
 	for i := 0; i < 100; i++ {
 		steepest(m1, m2)
 	}
-	cost, _ := calcCost(Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}, m1, m2)
+	cost, _ := calcCost(Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate(), m1, m2)
 	fmt.Println(cost)
 }

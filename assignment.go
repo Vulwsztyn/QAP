@@ -40,7 +40,7 @@ func (assignment Assignment) myMap(fn func(int) int) (result Assignment) {
 	return
 }
 
-func (assignment Assignment) translateAssignment() (result Assignment) {
+func (assignment Assignment) translate() (result Assignment) {
 	for i := 0; i < defaultSize; i++ {
 		result[assignment[i]] = i
 	}
