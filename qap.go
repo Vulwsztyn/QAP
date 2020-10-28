@@ -10,10 +10,8 @@ const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
 func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
 	currentAssignment := randomPermutation()
-	bestCost, _ := calcCost(currentAssignment, m1, m2)
-	bestNeighbourCost := bestCost - 1
-	bestNeighbourIndex := 0
-	for bestNeighbourCost < bestCost {
+	var bestCost, bestNeighbourCost, bestNeighbourIndex int
+	for ok := true; ok; ok = bestNeighbourCost < bestCost {
 		bestCost, _ = calcCost(currentAssignment, m1, m2)
 		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2)
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
@@ -158,5 +156,5 @@ func main() {
 		steepest(m1, m2)
 	}
 	cost, _ := calcCost(Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate(), m1, m2)
-	fmt.Println(cost)
+	fmt.Println(cost, Assignment{11, 6, 8, 2, 3, 7, 10, 0, 4, 5, 9, 1}.translate())
 }
