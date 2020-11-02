@@ -6,20 +6,22 @@ import (
 	"time"
 )
 
-const defaultSize = 5
+const defaultSize = 12
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
-func steepest(m1 IntMat, m2 IntMat) (Assignment, int) {
-	currentAssignment := randomPermutation()
-	var bestCost, bestNeighbourCost, bestNeighbourIndex int
+func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int64) {
+	start := time.Now()
+	currentAssignment := assignment
+	var bestCost, bestNeighbourCost, bestNeighbourIndex, stepCount int
 	for ok := true; ok; ok = bestNeighbourCost < bestCost {
 		bestCost, _ = calcCost(currentAssignment, m1, m2)
 		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, rand.Intn(defaultSize))
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
+		stepCount++
 	}
-	fmt.Println(bestCost, currentAssignment)
-	return currentAssignment, bestCost
+	stop := time.Since(start)
+	return currentAssignment, bestCost, stepCount, stop.Microseconds()
 }
 
 func positiveReminder(a, b int) (result int) {
@@ -93,49 +95,25 @@ func and(fn1, fn2 func(int) bool) func(int) bool {
 	return func(a int) bool { return fn1(a) && fn2(a) }
 }
 
-func greedy(assignment Assignment, m1, m2 IntMat) (result Assignment, cost int) {
+func greedy(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int64) {
+	start := time.Now()
 	bestAssignment := assignment
 	var exists bool
+	var cost, stepCount int
 	for ok := true; ok; {
 		bestAssignment, cost, exists = bestAssignment.getFirstBetterNeighbour(m1, m2)
 		ok = exists
+		stepCount++
 	}
-	return bestAssignment, cost
+	stop := time.Since(start)
+	return bestAssignment, cost, stepCount, stop.Microseconds()
 }
 
 func main() {
 	rand.Seed(123)
-	var timeSplits []int64
-	maxRange := 1000
-	minRange := 100
-	start := time.Now()
-	m1 := NewRandomMatrix(maxRange, minRange)
-	m2 := NewRandomMatrix(maxRange, minRange)
-
-	stop := time.Since(start)
-	timeSplits = append(timeSplits, stop.Microseconds())
-
-	fmt.Println(timeSplits)
-
-	testAssignment := randomPermutation()
-	//testAssignment := Assignment{1, 4, 2, 3, 0}
-	//fmt.Println(testAssignment)
-	//fmt.Println(testAssignment.translateAssignment())
-	//
-	fmt.Println(m1)
-
-	fmt.Println(m2)
-	fmt.Println(m1.permuteMatrix(testAssignment))
-	//fmt.Println(testAssignment)
-	//fmt.Println(calcCost(testAssignment, m1, m2))
-	//fmt.Println(fileReader("instances/chr12a.dat"))
-
-	//fmt.Println(testAssignment)
-	//for _,v := range createNeighbours(testAssignment) {
-	//	fmt.Println(v)
-	//}
-	//fmt.Println(testAssignment.any(func(a int) bool {return a == 4 }))
-	fmt.Println(testAssignment)
-	fmt.Println(calcCost(testAssignment, m1, m2))
-	fmt.Println(greedy(testAssignment, m1, m2))
+	filename := "instances/chr12a.dat"
+	m1, m2 := fileReader(filename)
+	assignment := randomPermutation()
+	fmt.Println(steepest(assignment, m1, m2))
+	fmt.Println(greedy(assignment, m1, m2))
 }
