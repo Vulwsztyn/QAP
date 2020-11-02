@@ -36,11 +36,11 @@ func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex in
 	index := 0
 	iCount := 0
 	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
-		fmt.Println(i)
+		//fmt.Println(i)
 		for j := (i + 1) % defaultSize; j != positiveReminder(i-iCount, defaultSize); j = (j + 1) % defaultSize {
 			tmp := assignment
 			tmp[i], tmp[j] = tmp[j], tmp[i]
-			fmt.Println(i, j)
+			//fmt.Println(i, j)
 			costs[index], _ = calcCost(tmp, m1, m2)
 			result[index] = tmp
 			index++
@@ -100,7 +100,7 @@ func random(timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
 	stop := time.Since(start)
 	for ok := true; ok; {
 		assignment := randomPermutation()
-		cost, _ := calcCost(assignment,m1,m2)
+		cost, _ := calcCost(assignment, m1, m2)
 		if stepCount == 0 || bestCost > cost {
 			bestCost = cost
 			bestAssignment = assignment
@@ -112,6 +112,33 @@ func random(timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
 	return bestAssignment, bestCost, stepCount, stop.Microseconds()
 }
 
+func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
+	start := time.Now()
+	currentAssignment := assignment
+	var bestCost, stepCount int
+	var bestAssignment Assignment
+	stop := time.Since(start)
+	for ok := true; ok; {
+		i := rand.Intn(defaultSize)
+		j := rand.Intn(defaultSize - 1)
+		if j >= i {
+			j++
+		}
+		currentAssignment[i], currentAssignment[j] = currentAssignment[j], currentAssignment[i]
+		cost, _ := calcCost(assignment, m1, m2)
+		if stepCount == 0 || bestCost > cost {
+			bestCost = cost
+			bestAssignment = assignment
+		}
+		//fmt.Println(assignment, currentAssignment, bestCost)
+		stop = time.Since(start)
+		ok = stop.Microseconds() < timeLimit
+		stepCount++
+
+	}
+	return bestAssignment, bestCost, stepCount, stop.Microseconds()
+}
+
 func main() {
 	rand.Seed(123)
 	filename := "instances/chr12a.dat"
@@ -119,8 +146,10 @@ func main() {
 	assignment := randomPermutation()
 	assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
 	assignmentG, costG, stepsG, timeG := greedy(assignment, m1, m2)
-	assignmentR, costR, stepsR, timeR := random(timeS,m1,m2)
+	assignmentR, costR, stepsR, timeR := random(timeS, m1, m2)
+	assignmentRW, costRW, stepsRW, timeRW := randomWalk(assignment, 50, m1, m2)
 	fmt.Println(assignmentS, costS, stepsS, timeS)
 	fmt.Println(assignmentG, costG, stepsG, timeG)
 	fmt.Println(assignmentR, costR, stepsR, timeR)
+	fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 }
