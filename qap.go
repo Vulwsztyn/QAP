@@ -139,10 +139,41 @@ func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignme
 	return bestAssignment, bestCost, stepCount, stop.Microseconds()
 }
 
+func measureTime(filename string, times int) {
+	m1, m2, _ := fileReader(filename)
+	var costSSum, costGSum, costRWSum, costRSum int
+	var timeSSum, timeGSum float64
+	for i := 0; i < times; i++ {
+		assignment := randomPermutation()
+		_, costS, _, timeS := steepest(assignment, m1, m2)
+		_, costG, _, timeG := greedy(assignment, m1, m2)
+		timeLimit := (timeS + timeG) / 2
+		_, costRW, _, _ := randomWalk(assignment, timeLimit, m1, m2)
+		_, costR, _, _ := random(timeLimit, m1, m2)
+
+		timeSSum += float64(timeS)
+		timeGSum += float64(timeG)
+
+		costSSum += costS
+		costGSum += costG
+		costRWSum += costRW
+		costRSum += costR
+	}
+	timeSSum = timeSSum / float64(times)
+	timeGSum = timeGSum / float64(times)
+	costSSum = costSSum / times
+	costGSum = costGSum / times
+	costRWSum = costRWSum / times
+	costRSum = costRSum / times
+	fmt.Println(timeSSum, timeGSum)
+	fmt.Println(costSSum, costGSum, costRWSum, costRSum)
+}
+
 func main() {
 	rand.Seed(123)
 	filename := "instances/chr12a.dat"
-	m1, m2 := fileReader(filename)
+	m1, m2, _ := fileReader(filename)
+
 	assignment := randomPermutation()
 	assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
 	assignmentG, costG, stepsG, timeG := greedy(assignment, m1, m2)
@@ -152,4 +183,6 @@ func main() {
 	fmt.Println(assignmentG, costG, stepsG, timeG)
 	fmt.Println(assignmentR, costR, stepsR, timeR)
 	fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
+
+	measureTime(filename, 1000)
 }

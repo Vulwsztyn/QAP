@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func fileReader(fileName string) (m1 IntMat, m2 IntMat) {
+func fileReader(fileName string) (m1 IntMat, m2 IntMat, instanceSize int) {
 	f, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -26,7 +26,7 @@ func fileReader(fileName string) (m1 IntMat, m2 IntMat) {
 	scanner := bufio.NewScanner(f)
 
 	scanner.Scan()
-	instanceSize, _ := strconv.Atoi(strings.TrimSpace(scanner.Text()))
+	instanceSize, _ = strconv.Atoi(strings.TrimSpace(scanner.Text()))
 
 	for scanner.Scan() {
 		row := strings.Fields(strings.TrimSpace(scanner.Text()))
