@@ -79,22 +79,6 @@ func randomPermutation() Assignment {
 	return result
 }
 
-func equals(value int) func(int) bool {
-	// returns a function checking whether its argument is equal to the argument of this function
-	return func(a int) bool { return a == value }
-}
-
-func notEquals(value int) func(int) bool {
-	// jestem pewny, że da się to zrobić lepiej
-	// returns a function checking whether its argument is not equal to the argument of this function
-	return func(a int) bool { return a != value }
-}
-
-func and(fn1, fn2 func(int) bool) func(int) bool {
-	// returns a function checking whether its argument returns true for both parameter functions
-	return func(a int) bool { return fn1(a) && fn2(a) }
-}
-
 func greedy(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int64) {
 	start := time.Now()
 	bestAssignment := assignment
