@@ -1,6 +1,6 @@
 package main
 
-type Assignment [defaultSize]int
+type Assignment [maxInstanceSize]int
 
 func NewAssignment(value int) (result Assignment) {
 	return result.myMap(func(_ int) int { return value })
@@ -41,7 +41,7 @@ func (assignment Assignment) myMap(fn func(int) int) (result Assignment) {
 }
 
 func (assignment Assignment) translate() (result Assignment) {
-	for i := 0; i < defaultSize; i++ {
+	for i := 0; i < instanceSize; i++ {
 		result[assignment[i]] = i
 	}
 	return
@@ -49,8 +49,8 @@ func (assignment Assignment) translate() (result Assignment) {
 
 func (assignment Assignment) getFirstBetterNeighbour(m1, m2 IntMat) (result Assignment, cost int, exists bool) {
 	currentCost, _ := calcCost(assignment, m1, m2)
-	for i := 0; i < defaultSize-1; i++ {
-		for j := i + 1; j < defaultSize; j++ {
+	for i := 0; i < instanceSize-1; i++ {
+		for j := i + 1; j < instanceSize; j++ {
 			tmp := assignment
 			tmp[i], tmp[j] = tmp[j], tmp[i]
 			tmpCost, _ := calcCost(tmp, m1, m2)

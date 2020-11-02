@@ -6,8 +6,11 @@ import (
 	"time"
 )
 
-const defaultSize = 12
-const neighbourCount = defaultSize * (defaultSize - 1) / 2
+const maxInstanceSize = 24
+const maxNeighbourSize = maxInstanceSize * (maxInstanceSize - 1) / 2
+
+var instanceSize = 12
+var neighbourSize = instanceSize * (instanceSize - 1) / 2
 
 func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int64) {
 	start := time.Now()
@@ -15,8 +18,8 @@ func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int
 	var bestCost, bestNeighbourCost, bestNeighbourIndex, stepCount int
 	for ok := true; ok; ok = bestNeighbourCost < bestCost {
 		bestCost, _ = calcCost(currentAssignment, m1, m2)
-		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, rand.Intn(defaultSize))
-		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
+		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, rand.Intn(instanceSize))
+		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:instanceSize])
 		currentAssignment = neighbours[bestNeighbourIndex]
 		stepCount++
 	}
@@ -32,12 +35,12 @@ func positiveReminder(a, b int) (result int) {
 	return
 }
 
-func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
+func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex int) (result [maxNeighbourSize]Assignment, costs [maxNeighbourSize]int) {
 	index := 0
 	iCount := 0
-	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
+	for i := startIndex; index < neighbourSize; i = (i + 1) % instanceSize {
 		//fmt.Println(i)
-		for j := (i + 1) % defaultSize; j != positiveReminder(i-iCount, defaultSize); j = (j + 1) % defaultSize {
+		for j := (i + 1) % instanceSize; j != positiveReminder(i-iCount, instanceSize); j = (j + 1) % instanceSize {
 			tmp := assignment
 			tmp[i], tmp[j] = tmp[j], tmp[i]
 			//fmt.Println(i, j)
@@ -51,8 +54,8 @@ func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex in
 }
 
 func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int, costMatrix IntMat) {
-	for i := 0; i < defaultSize; i++ {
-		for j := 0; j < defaultSize; j++ {
+	for i := 0; i < instanceSize; i++ {
+		for j := 0; j < instanceSize; j++ {
 			costMatrix[i][j] = m1[assignment[i]][assignment[j]] * m2[i][j]
 			result += costMatrix[i][j]
 		}
@@ -69,10 +72,10 @@ func makeRange(min, max int) []int {
 }
 
 func randomPermutation() Assignment {
-	_range := makeRange(0, defaultSize)
-	var result [defaultSize]int
-	for i := 0; i < defaultSize; i++ {
-		j := rand.Intn(defaultSize - i)
+	_range := makeRange(0, instanceSize)
+	var result [maxInstanceSize]int
+	for i := 0; i < instanceSize; i++ {
+		j := rand.Intn(instanceSize - i)
 		result[i] = _range[j]
 		_range[j] = _range[len(_range)-1-i]
 	}
@@ -119,8 +122,8 @@ func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignme
 	var bestAssignment Assignment
 	stop := time.Since(start)
 	for ok := true; ok; {
-		i := rand.Intn(defaultSize)
-		j := rand.Intn(defaultSize - 1)
+		i := rand.Intn(instanceSize)
+		j := rand.Intn(instanceSize - 1)
 		if j >= i {
 			j++
 		}

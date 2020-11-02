@@ -5,12 +5,12 @@ import (
 	"math/rand"
 )
 
-type IntMat [defaultSize][defaultSize]int
+type IntMat [maxInstanceSize][maxInstanceSize]int
 
 func NewRandomMatrix(maxRange int, minRange int) (matrix IntMat) {
 	delta := maxRange - minRange
-	for i := 0; i < defaultSize; i++ {
-		for j := 0; j < defaultSize; j++ {
+	for i := 0; i < instanceSize; i++ {
+		for j := 0; j < instanceSize; j++ {
 			matrix[i][j] = rand.Intn(delta) + minRange
 		}
 	}
@@ -18,8 +18,8 @@ func NewRandomMatrix(maxRange int, minRange int) (matrix IntMat) {
 }
 
 func (m1 IntMat) permuteMatrix(assignment Assignment) (matrix IntMat) {
-	for i := 0; i < defaultSize; i++ {
-		for j := 0; j < defaultSize; j++ {
+	for i := 0; i < instanceSize; i++ {
+		for j := 0; j < instanceSize; j++ {
 			matrix[i][j] = m1[assignment[i]][assignment[j]]
 		}
 	}
