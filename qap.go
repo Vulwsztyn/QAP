@@ -93,11 +93,34 @@ func greedy(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int64) 
 	return bestAssignment, cost, stepCount, stop.Microseconds()
 }
 
+func random(timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
+	start := time.Now()
+	var bestCost, stepCount int
+	var bestAssignment Assignment
+	stop := time.Since(start)
+	for ok := true; ok; {
+		assignment := randomPermutation()
+		cost, _ := calcCost(assignment,m1,m2)
+		if stepCount == 0 || bestCost > cost {
+			bestCost = cost
+			bestAssignment = assignment
+		}
+		stop = time.Since(start)
+		ok = stop.Microseconds() < timeLimit
+		stepCount++
+	}
+	return bestAssignment, bestCost, stepCount, stop.Microseconds()
+}
+
 func main() {
 	rand.Seed(123)
 	filename := "instances/chr12a.dat"
 	m1, m2 := fileReader(filename)
 	assignment := randomPermutation()
-	fmt.Println(steepest(assignment, m1, m2))
-	fmt.Println(greedy(assignment, m1, m2))
+	assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
+	assignmentG, costG, stepsG, timeG := greedy(assignment, m1, m2)
+	assignmentR, costR, stepsR, timeR := random(timeS,m1,m2)
+	fmt.Println(assignmentS, costS, stepsS, timeS)
+	fmt.Println(assignmentG, costG, stepsG, timeG)
+	fmt.Println(assignmentR, costR, stepsR, timeR)
 }
