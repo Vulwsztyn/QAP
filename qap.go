@@ -1,11 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
 
-const defaultSize = 12
+var instances = []string{"tai256c", "tho150", "wil50", "sko100c", "lipa80a", "nug30", "rou20", "kra32", "chr12c", "bur26e"}
+
+//var instanceSizes = []int{256,150,50,100,80,30,20,32,12,26}
+
+const defaultSize = 256
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
 func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int64) {
@@ -17,6 +22,7 @@ func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int
 		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, rand.Intn(defaultSize))
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
+		println(bestCost)
 		stepCount++
 	}
 	stop := time.Since(start)
@@ -142,11 +148,16 @@ func measureTime(filename string, times int) {
 	m1, m2, _ := fileReader("instances/" + filename + ".dat")
 	var SArray, GArray, RWArray, RArray [][2]int
 	for i := 0; i < times; i++ {
+		fmt.Println(i, "iteration...")
 		assignment := randomPermutation()
+		fmt.Println("Steepest")
 		_, costS, _, timeS := steepest(assignment, m1, m2)
+		fmt.Println("Greedy")
 		_, costG, _, timeG := greedy(assignment, m1, m2)
 		timeLimit := (timeS + timeG) / 2
+		fmt.Println("Random Walk")
 		_, costRW, _, timeRW := randomWalk(assignment, timeLimit, m1, m2)
+		fmt.Println("Random")
 		_, costR, _, timeR := random(timeLimit, m1, m2)
 
 		SArray = append(SArray, [2]int{costS, int(timeS)})
@@ -158,6 +169,7 @@ func measureTime(filename string, times int) {
 	writeFile(GArray, "G_"+filename)
 	writeFile(RWArray, "RW_"+filename)
 	writeFile(RArray, "R_"+filename)
+	fmt.Println("done")
 }
 
 func main() {
@@ -175,5 +187,5 @@ func main() {
 	//fmt.Println(assignmentR, costR, stepsR, timeR)
 	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	measureTime("chr12a", 1000)
+	measureTime(instances[0], 10)
 }
