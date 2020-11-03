@@ -13,9 +13,10 @@ func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int
 	start := time.Now()
 	currentAssignment := assignment
 	var bestCost, bestNeighbourCost, bestNeighbourIndex, stepCount int
+	var costMatrix IntMat
 	for ok := true; ok; ok = bestNeighbourCost < bestCost {
-		bestCost, _ = calcCost(currentAssignment, m1, m2)
-		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, rand.Intn(defaultSize))
+		bestCost, costMatrix = calcCost(currentAssignment, m1, m2)
+		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, costMatrix, rand.Intn(defaultSize))
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
 		stepCount++
@@ -32,7 +33,7 @@ func positiveReminder(a, b int) (result int) {
 	return
 }
 
-func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
+func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
 	index := 0
 	iCount := 0
 	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
@@ -41,7 +42,7 @@ func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, startIndex in
 			tmp := assignment
 			tmp[i], tmp[j] = tmp[j], tmp[i]
 			//fmt.Println(i, j)
-			costs[index], _ = calcCost(tmp, m1, m2)
+			costs[index], _ = reCalcCost(tmp, m1, m2, previousCostMatrix, [2]int{i, j})
 			result[index] = tmp
 			index++
 		}
@@ -58,6 +59,25 @@ func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int, costMatr
 		}
 	}
 	return
+}
+
+func reCalcCost(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, indexes [2]int) (int, IntMat) {
+	result := 0
+	costMatrix := previousCostMatrix
+	for _, j := range indexes {
+		for i := 0; i < defaultSize; i++ {
+			if i != j {
+				costMatrix[i][j] = m1[assignment[i]][assignment[j]] * m2[i][j]
+				costMatrix[j][i] = m1[assignment[j]][assignment[i]] * m2[j][i]
+			}
+		}
+	}
+	for i := 0; i < defaultSize; i++ {
+		for j := 0; j < defaultSize; j++ {
+			result += costMatrix[i][j]
+		}
+	}
+	return result, costMatrix
 }
 
 func makeRange(min, max int) []int {
