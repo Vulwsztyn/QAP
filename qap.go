@@ -16,7 +16,7 @@ func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int
 	var costMatrix IntMat
 	for ok := true; ok; ok = bestNeighbourCost < bestCost {
 		bestCost, costMatrix = calcCost(currentAssignment, m1, m2)
-		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, costMatrix, rand.Intn(defaultSize))
+		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
 		stepCount++
@@ -33,7 +33,7 @@ func positiveReminder(a, b int) (result int) {
 	return
 }
 
-func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
+func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
 	index := 0
 	iCount := 0
 	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
@@ -42,7 +42,7 @@ func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, previousCostM
 			tmp := assignment
 			tmp[i], tmp[j] = tmp[j], tmp[i]
 			//fmt.Println(i, j)
-			costs[index], _ = reCalcCost(tmp, m1, m2, previousCostMatrix, [2]int{i, j})
+			costs[index], _ = reCalcCost(tmp, m1, m2, previousCostMatrix, previousCost, [2]int{i, j})
 			result[index] = tmp
 			index++
 		}
@@ -61,20 +61,21 @@ func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int, costMatr
 	return
 }
 
-func reCalcCost(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, indexes [2]int) (int, IntMat) {
-	result := 0
+func reCalcCost(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, indexes [2]int) (int, IntMat) {
+	result := previousCost
 	costMatrix := previousCostMatrix
 	for _, j := range indexes {
 		for i := 0; i < defaultSize; i++ {
 			if i != j {
+				result -= previousCostMatrix[i][j]
+				result -= previousCostMatrix[j][i]
+
 				costMatrix[i][j] = m1[assignment[i]][assignment[j]] * m2[i][j]
 				costMatrix[j][i] = m1[assignment[j]][assignment[i]] * m2[j][i]
+
+				result += costMatrix[i][j]
+				result += costMatrix[j][i]
 			}
-		}
-	}
-	for i := 0; i < defaultSize; i++ {
-		for j := 0; j < defaultSize; j++ {
-			result += costMatrix[i][j]
 		}
 	}
 	return result, costMatrix
