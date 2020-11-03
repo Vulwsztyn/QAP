@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -140,49 +139,41 @@ func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignme
 }
 
 func measureTime(filename string, times int) {
-	m1, m2, _ := fileReader(filename)
-	var costSSum, costGSum, costRWSum, costRSum int
-	var timeSSum, timeGSum float64
+	m1, m2, _ := fileReader("instances/" + filename + ".dat")
+	var SArray, GArray, RWArray, RArray [][2]int
 	for i := 0; i < times; i++ {
 		assignment := randomPermutation()
 		_, costS, _, timeS := steepest(assignment, m1, m2)
 		_, costG, _, timeG := greedy(assignment, m1, m2)
 		timeLimit := (timeS + timeG) / 2
-		_, costRW, _, _ := randomWalk(assignment, timeLimit, m1, m2)
-		_, costR, _, _ := random(timeLimit, m1, m2)
+		_, costRW, _, timeRW := randomWalk(assignment, timeLimit, m1, m2)
+		_, costR, _, timeR := random(timeLimit, m1, m2)
 
-		timeSSum += float64(timeS)
-		timeGSum += float64(timeG)
-
-		costSSum += costS
-		costGSum += costG
-		costRWSum += costRW
-		costRSum += costR
+		SArray = append(SArray, [2]int{costS, int(timeS)})
+		GArray = append(GArray, [2]int{costG, int(timeG)})
+		RWArray = append(RWArray, [2]int{costRW, int(timeRW)})
+		RArray = append(RArray, [2]int{costR, int(timeR)})
 	}
-	timeSSum = timeSSum / float64(times)
-	timeGSum = timeGSum / float64(times)
-	costSSum = costSSum / times
-	costGSum = costGSum / times
-	costRWSum = costRWSum / times
-	costRSum = costRSum / times
-	fmt.Println(timeSSum, timeGSum)
-	fmt.Println(costSSum, costGSum, costRWSum, costRSum)
+	writeFile(SArray, "S_"+filename)
+	writeFile(GArray, "G_"+filename)
+	writeFile(RWArray, "RW_"+filename)
+	writeFile(RArray, "R_"+filename)
 }
 
 func main() {
 	rand.Seed(123)
-	filename := "instances/chr12a.dat"
-	m1, m2, _ := fileReader(filename)
+	//filename := "instances/chr12a.dat"
+	//m1, m2, _ := fileReader(filename)
+	//
+	//assignment := randomPermutation()
+	//assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
+	//assignmentG, costG, stepsG, timeG := greedy(assignment, m1, m2)
+	//assignmentR, costR, stepsR, timeR := random(timeS, m1, m2)
+	//assignmentRW, costRW, stepsRW, timeRW := randomWalk(assignment, 50, m1, m2)
+	//fmt.Println(assignmentS, costS, stepsS, timeS)
+	//fmt.Println(assignmentG, costG, stepsG, timeG)
+	//fmt.Println(assignmentR, costR, stepsR, timeR)
+	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	assignment := randomPermutation()
-	assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
-	assignmentG, costG, stepsG, timeG := greedy(assignment, m1, m2)
-	assignmentR, costR, stepsR, timeR := random(timeS, m1, m2)
-	assignmentRW, costRW, stepsRW, timeRW := randomWalk(assignment, 50, m1, m2)
-	fmt.Println(assignmentS, costS, stepsS, timeS)
-	fmt.Println(assignmentG, costG, stepsG, timeG)
-	fmt.Println(assignmentR, costR, stepsR, timeR)
-	fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
-
-	measureTime(filename, 1000)
+	measureTime("chr12a", 1000)
 }
