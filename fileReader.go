@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -50,4 +51,27 @@ func fileReader(fileName string) (m1 IntMat, m2 IntMat, instanceSize int) {
 		log.Fatal(err)
 	}
 	return
+}
+
+func writeFile(results [][2]int, filename string) {
+	f, err := os.Create("results/" + filename + ".txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, value := range results {
+		_, err = f.WriteString(fmt.Sprint(value[0]) + " " + fmt.Sprint(value[1]) + "\n")
+		if err != nil {
+			fmt.Println(err)
+			f.Close()
+			return
+		}
+	}
+
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }

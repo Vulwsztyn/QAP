@@ -6,7 +6,11 @@ import (
 	"time"
 )
 
-const defaultSize = 12
+var instances = []string{"tai256c", "tho150", "wil50", "sko100c", "lipa80a", "nug30", "rou20", "kra32", "chr12c", "bur26e"}
+
+//var instanceSizes = []int{256,150,50,100,80,30,20,32,12,26}
+
+const defaultSize = 256
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
 func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int64) {
@@ -19,6 +23,7 @@ func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int
 		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
+		println(bestCost)
 		stepCount++
 	}
 	stop := time.Since(start)
@@ -161,49 +166,47 @@ func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignme
 }
 
 func measureTime(filename string, times int) {
-	m1, m2, _ := fileReader(filename)
-	var costSSum, costGSum, costRWSum, costRSum int
-	var timeSSum, timeGSum float64
+	m1, m2, _ := fileReader("instances/" + filename + ".dat")
+	var SArray, GArray, RWArray, RArray [][2]int
 	for i := 0; i < times; i++ {
+		fmt.Println(i, "iteration...")
 		assignment := randomPermutation()
+		fmt.Println("Steepest")
 		_, costS, _, timeS := steepest(assignment, m1, m2)
+		fmt.Println("Greedy")
 		_, costG, _, timeG := greedy(assignment, m1, m2)
 		timeLimit := (timeS + timeG) / 2
-		_, costRW, _, _ := randomWalk(assignment, timeLimit, m1, m2)
-		_, costR, _, _ := random(timeLimit, m1, m2)
+		fmt.Println("Random Walk")
+		_, costRW, _, timeRW := randomWalk(assignment, timeLimit, m1, m2)
+		fmt.Println("Random")
+		_, costR, _, timeR := random(timeLimit, m1, m2)
 
-		timeSSum += float64(timeS)
-		timeGSum += float64(timeG)
-
-		costSSum += costS
-		costGSum += costG
-		costRWSum += costRW
-		costRSum += costR
+		SArray = append(SArray, [2]int{costS, int(timeS)})
+		GArray = append(GArray, [2]int{costG, int(timeG)})
+		RWArray = append(RWArray, [2]int{costRW, int(timeRW)})
+		RArray = append(RArray, [2]int{costR, int(timeR)})
 	}
-	timeSSum = timeSSum / float64(times)
-	timeGSum = timeGSum / float64(times)
-	costSSum = costSSum / times
-	costGSum = costGSum / times
-	costRWSum = costRWSum / times
-	costRSum = costRSum / times
-	fmt.Println(timeSSum, timeGSum)
-	fmt.Println(costSSum, costGSum, costRWSum, costRSum)
+	writeFile(SArray, "S_"+filename)
+	writeFile(GArray, "G_"+filename)
+	writeFile(RWArray, "RW_"+filename)
+	writeFile(RArray, "R_"+filename)
+	fmt.Println("done")
 }
 
 func main() {
 	rand.Seed(123)
-	filename := "instances/chr12a.dat"
-	m1, m2, _ := fileReader(filename)
+	//filename := "instances/chr12a.dat"
+	//m1, m2, _ := fileReader(filename)
+	//
+	//assignment := randomPermutation()
+	//assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
+	//assignmentG, costG, stepsG, timeG := greedy(assignment, m1, m2)
+	//assignmentR, costR, stepsR, timeR := random(timeS, m1, m2)
+	//assignmentRW, costRW, stepsRW, timeRW := randomWalk(assignment, 50, m1, m2)
+	//fmt.Println(assignmentS, costS, stepsS, timeS)
+	//fmt.Println(assignmentG, costG, stepsG, timeG)
+	//fmt.Println(assignmentR, costR, stepsR, timeR)
+	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	assignment := randomPermutation()
-	assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
-	assignmentG, costG, stepsG, timeG := greedy(assignment, m1, m2)
-	assignmentR, costR, stepsR, timeR := random(timeS, m1, m2)
-	assignmentRW, costRW, stepsRW, timeRW := randomWalk(assignment, 50, m1, m2)
-	fmt.Println(assignmentS, costS, stepsS, timeS)
-	fmt.Println(assignmentG, costG, stepsG, timeG)
-	fmt.Println(assignmentR, costR, stepsR, timeR)
-	fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
-
-	measureTime(filename, 1000)
+	measureTime(instances[0], 10)
 }
