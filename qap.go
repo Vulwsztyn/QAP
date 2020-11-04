@@ -10,24 +10,24 @@ var instances = []string{"tai256c", "tho150", "wil50", "sko100c", "lipa80a", "nu
 
 //var instanceSizes = []int{256,150,50,100,80,30,20,32,12,26}
 
-const defaultSize = 256
+const defaultSize = 12
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
-func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int64) {
+func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int, int64) {
 	start := time.Now()
 	currentAssignment := assignment
-	var bestCost, bestNeighbourCost, bestNeighbourIndex, stepCount int
+	var bestCost, bestNeighbourCost, bestNeighbourIndex, stepCount, exploredSolutions int
 	var costMatrix IntMat
 	for ok := true; ok; ok = bestNeighbourCost < bestCost {
 		bestCost, costMatrix = calcCost(currentAssignment, m1, m2)
 		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
+		exploredSolutions += neighbourCount - 1
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
-		println(bestCost)
 		stepCount++
 	}
 	stop := time.Since(start)
-	return currentAssignment, bestCost, stepCount, stop.Microseconds()
+	return currentAssignment, bestCost, stepCount, exploredSolutions, stop.Microseconds()
 }
 
 func positiveReminder(a, b int) (result int) {
@@ -105,18 +105,18 @@ func randomPermutation() Assignment {
 	return result
 }
 
-func greedy(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int64) {
+func greedy(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int, int64) {
 	start := time.Now()
 	bestAssignment := assignment
 	var exists bool
-	var cost, stepCount int
+	var cost, stepCount, solutionsExplored int
 	for ok := true; ok; {
-		bestAssignment, cost, exists = bestAssignment.getFirstBetterNeighbour(m1, m2)
+		bestAssignment, cost, solutionsExplored, exists = bestAssignment.getFirstBetterNeighbour(m1, m2)
 		ok = exists
 		stepCount++
 	}
 	stop := time.Since(start)
-	return bestAssignment, cost, stepCount, stop.Microseconds()
+	return bestAssignment, cost, stepCount, solutionsExplored, stop.Microseconds()
 }
 
 func random(timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
@@ -167,24 +167,24 @@ func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignme
 
 func measureTime(filename string, times int) {
 	m1, m2, _ := fileReader("instances/" + filename + ".dat")
-	var SArray, GArray, RWArray, RArray [][2]int
+	var SArray, GArray, RWArray, RArray [][4]int
 	for i := 0; i < times; i++ {
 		fmt.Println(i, "iteration...")
 		assignment := randomPermutation()
 		fmt.Println("Steepest")
-		_, costS, _, timeS := steepest(assignment, m1, m2)
+		_, costS, stepsS, exploreSolutionsS, timeS := steepest(assignment, m1, m2)
 		fmt.Println("Greedy")
-		_, costG, _, timeG := greedy(assignment, m1, m2)
+		_, costG, stepsG, exploreSolutionsG, timeG := greedy(assignment, m1, m2)
 		timeLimit := (timeS + timeG) / 2
 		fmt.Println("Random Walk")
-		_, costRW, _, timeRW := randomWalk(assignment, timeLimit, m1, m2)
+		_, costRW, exploreSolutionsRW, timeRW := randomWalk(assignment, timeLimit, m1, m2)
 		fmt.Println("Random")
-		_, costR, _, timeR := random(timeLimit, m1, m2)
+		_, costR, exploreSolutionsR, timeR := random(timeLimit, m1, m2)
 
-		SArray = append(SArray, [2]int{costS, int(timeS)})
-		GArray = append(GArray, [2]int{costG, int(timeG)})
-		RWArray = append(RWArray, [2]int{costRW, int(timeRW)})
-		RArray = append(RArray, [2]int{costR, int(timeR)})
+		SArray = append(SArray, [4]int{costS, stepsS, exploreSolutionsS, int(timeS)})
+		GArray = append(GArray, [4]int{costG, stepsG, exploreSolutionsG, int(timeG)})
+		RWArray = append(RWArray, [4]int{costRW, -1, exploreSolutionsRW, int(timeRW)})
+		RArray = append(RArray, [4]int{costR, -1, exploreSolutionsR, int(timeR)})
 	}
 	writeFile(SArray, "S_"+filename)
 	writeFile(GArray, "G_"+filename)
@@ -208,5 +208,5 @@ func main() {
 	//fmt.Println(assignmentR, costR, stepsR, timeR)
 	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	measureTime(instances[0], 10)
+	measureTime(instances[8], 10)
 }
