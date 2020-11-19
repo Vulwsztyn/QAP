@@ -1,9 +1,8 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-instances = ['tai256c', 'tho150', 'wil50', 'sko100c', 'lipa80a', 'nug30', 'rou20', 'kra32', 'chr12c', 'bur26e']
-algorithms = ['S', 'G', 'R', 'RW']
+instances = ['chr12c', 'nug30']
+algorithms = ['S', 'G', 'H', 'R', 'RW']
 
 def read_file(file_name):
     time = []
@@ -22,88 +21,137 @@ def read_file(file_name):
     return cost,steps,explored_solutions, time
 
 
-def plot_score(labels, data_mean, data_min, data_std, filename):
-    width = 0.35  # the width of the bars: can also be len(x) sequence
+def plot_score(data_mean, data_std):
+    width = 0.35
 
     fig, ax = plt.subplots()
+    x = np.arange(len(instances))
 
-    ax.bar(labels, data_min, width, label='Najlepszy wynik')
-    ax.bar(labels, np.subtract(data_mean, data_min), width/2, yerr=data_std, bottom=data_min,
-           label='Średni wynik')
+    for i in range(len(algorithms)):
+        ax.bar(x + i*(width / len(algorithms)), data_mean[i], width / len(algorithms), yerr=data_std[i], label=algorithms[i])
+
+    ax.set_xticks(x + (len(algorithms)//2)*width / len(algorithms))
+    ax.set_xticklabels(instances)
 
     ax.set_ylabel('Koszt')
-    ax.set_title('Koszty dla instancji ' +filename+ ' dla każdego z algorytmów')
+    ax.set_title('Koszty dla każdego z algorytmów')
     ax.legend()
 
     plt.show()
 
-def plot_time(labels, data_mean, data_std, filename):
-    width = 0.35  # the width of the bars: can also be len(x) sequence
+def plot_time(data_mean, data_std):
+    width = 0.35
 
     fig, ax = plt.subplots()
+    x = np.arange(len(instances))
 
-    ax.bar(labels, data_mean, width,yerr=data_std)
+    for i in range(3):
+        ax.bar(x + i*(width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
+
+    ax.set_xticks(x + (3//2)*width / 3)
+    ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średni czas w mikrosekundach')
-    ax.set_title('Czasy dla instancji ' +filename+ ' dla każdego z algorytmów')
+    ax.set_title('Czasy dla algorytmów S, G oraz H')
+    ax.legend()
 
     plt.show()
 
-def plot_steps(labels, data_mean, data_std, filename):
-    width = 0.35  # the width of the bars: can also be len(x) sequence
+def plot_steps(data_mean, data_std):
+    width = 0.35
 
     fig, ax = plt.subplots()
+    x = np.arange(len(instances))
 
-    ax.bar(labels, data_mean, width,yerr=data_std)
+    for i in range(3):
+        ax.bar(x + i*(width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
+
+    ax.set_xticks(x + (3//2)*width / 3)
+    ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średnia liczba kroków')
-    ax.set_title('Liczba kroków dla instancji ' +filename+ ' dla S oraz G')
+    ax.set_title('Liczba kroków dla algorytmów S, G oraz H')
+    ax.legend()
 
     plt.show()
 
-def plot_explored_solutions(labels, data_mean, data_std, filename):
-    width = 0.35  # the width of the bars: can also be len(x) sequence
+def plot_explored_solutions(data_mean, data_std):
+    width = 0.35
 
     fig, ax = plt.subplots()
+    x = np.arange(len(instances))
 
-    ax.bar(labels, data_mean, width,yerr=data_std)
+    for i in range(3):
+        ax.bar(x + i*(width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
+
+    ax.set_xticks(x + (3//2)*width / 3)
+    ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średnia sprawdzonych rozwiązań')
-    ax.set_title('Liczba sprawdzonych rozwiązań dla instancji ' +filename+ ' dla S oraz G')
+    ax.set_title('Liczba sprawdzonych rozwiązań dla algorytmów S, G oraz H')
+    ax.legend()
 
     plt.show()
 
 if __name__ == "__main__":
-    mean_cost = []
-    min_cost = []
-    std_cost = []
+    alg_mean_cost = []
+    alg_min_cost = []
+    alg_std_cost = []
 
-    mean_time = []
-    std_time = []
+    alg_mean_time = []
+    alg_std_time = []
 
-    mean_steps = []
-    std_steps = []
+    alg_mean_steps = []
+    alg_std_steps = []
 
-    mean_explored_solutions = []
-    std_explored_solutions = []
+    alg_mean_explored_solutions = []
+    alg_std_explored_solutions = []
 
     for name in algorithms:
-        cost,steps,explored_solutions, time = read_file("../results/"+name+"_chr12c.txt")
-        mean_cost.append(np.mean(cost))
-        min_cost.append(np.min(cost))
-        std_cost.append(np.std(cost))
+        mean_cost = []
+        min_cost = []
+        std_cost = []
 
-        if name != 'R' and name != 'RW':
-            mean_steps.append(np.mean(steps))
-            std_steps.append(np.std(steps))
+        mean_time = []
+        std_time = []
 
-        mean_explored_solutions.append(np.mean(explored_solutions))
-        std_explored_solutions.append(np.std(explored_solutions))
+        mean_steps = []
+        std_steps = []
 
-        mean_time.append(np.mean(time))
-        std_time.append(np.std(time))
+        mean_explored_solutions = []
+        std_explored_solutions = []
 
-    plot_score(algorithms,mean_cost, min_cost, std_cost, 'chr12c' )
-    plot_time(algorithms, mean_time, std_time, 'chr12c')
-    plot_steps(['S', 'G'], mean_steps, std_steps, 'chr12c')
-    plot_explored_solutions(algorithms, mean_explored_solutions, std_explored_solutions, 'chr12c')
+        for instance in instances:
+            cost,steps,explored_solutions, time = read_file("../results/"+name+"_"+instance+".txt")
+            mean_cost.append(np.mean(cost))
+            min_cost.append(np.min(cost))
+            std_cost.append(np.std(cost))
+
+            if name != 'R' and name != 'RW':
+                mean_steps.append(np.mean(steps))
+                std_steps.append(np.std(steps))
+
+            mean_explored_solutions.append(np.mean(explored_solutions))
+            std_explored_solutions.append(np.std(explored_solutions))
+
+            mean_time.append(np.mean(time))
+            std_time.append(np.std(time))
+
+        alg_mean_cost.append(mean_cost)
+        alg_min_cost.append(min_cost)
+        alg_std_cost.append(std_cost)
+
+        alg_mean_time.append(mean_time)
+        alg_std_time.append(std_time)
+
+        alg_mean_steps.append(mean_steps)
+        alg_std_steps.append(std_steps)
+
+        alg_mean_explored_solutions.append(mean_explored_solutions)
+        alg_std_explored_solutions.append(std_explored_solutions)
+
+
+    plot_score(alg_mean_cost, alg_std_cost)
+    plot_time(alg_mean_time, alg_std_time)
+    plot_steps(alg_mean_steps, alg_std_steps)
+    plot_explored_solutions(alg_mean_explored_solutions, alg_std_explored_solutions)
