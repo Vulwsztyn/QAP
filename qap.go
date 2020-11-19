@@ -21,7 +21,7 @@ func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int
 	for ok := true; ok; ok = bestNeighbourCost < bestCost {
 		bestCost, costMatrix = calcCost(currentAssignment, m1, m2)
 		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
-		exploredSolutions += neighbourCount - 1
+		exploredSolutions += neighbourCount
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
 		stepCount++
@@ -136,7 +136,7 @@ func heuristic(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int,
 
 		_, maxi := max(temp[:])
 		neighbours, neighboursCosts := createNeighboursHeuristic(currentAssignment, m1, m2, costMatrix, bestCost, maxi)
-		exploredSolutions += neighbourCount - 1
+		exploredSolutions += len(neighbours)
 		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
 		currentAssignment = neighbours[bestNeighbourIndex]
 		stepCount++
