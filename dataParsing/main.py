@@ -4,6 +4,7 @@ import numpy as np
 instances = ['chr12c', 'nug30']
 algorithms = ['S', 'G', 'H', 'R', 'RW']
 
+
 def read_file(file_name):
     time = []
     cost = []
@@ -18,7 +19,7 @@ def read_file(file_name):
         explored_solutions.append(int(x.split()[2]))
         time.append(int(x.split()[3]))
 
-    return cost,steps,explored_solutions, time
+    return cost, steps, explored_solutions, time
 
 
 def plot_score(data_mean, data_std):
@@ -28,9 +29,10 @@ def plot_score(data_mean, data_std):
     x = np.arange(len(instances))
 
     for i in range(len(algorithms)):
-        ax.bar(x + i*(width / len(algorithms)), data_mean[i], width / len(algorithms), yerr=data_std[i], label=algorithms[i])
+        ax.bar(x + i * (width / len(algorithms)), data_mean[i], width / len(algorithms), yerr=data_std[i],
+               label=algorithms[i])
 
-    ax.set_xticks(x + (len(algorithms)//2)*width / len(algorithms))
+    ax.set_xticks(x + (len(algorithms) // 2) * width / len(algorithms))
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Koszt')
@@ -39,6 +41,7 @@ def plot_score(data_mean, data_std):
 
     plt.show()
 
+
 def plot_time(data_mean, data_std):
     width = 0.35
 
@@ -46,9 +49,9 @@ def plot_time(data_mean, data_std):
     x = np.arange(len(instances))
 
     for i in range(3):
-        ax.bar(x + i*(width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
+        ax.bar(x + i * (width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
 
-    ax.set_xticks(x + (3//2)*width / 3)
+    ax.set_xticks(x + (3 // 2) * width / 3)
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średni czas w mikrosekundach')
@@ -57,6 +60,7 @@ def plot_time(data_mean, data_std):
 
     plt.show()
 
+
 def plot_steps(data_mean, data_std):
     width = 0.35
 
@@ -64,9 +68,9 @@ def plot_steps(data_mean, data_std):
     x = np.arange(len(instances))
 
     for i in range(3):
-        ax.bar(x + i*(width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
+        ax.bar(x + i * (width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
 
-    ax.set_xticks(x + (3//2)*width / 3)
+    ax.set_xticks(x + (3 // 2) * width / 3)
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średnia liczba kroków')
@@ -75,6 +79,7 @@ def plot_steps(data_mean, data_std):
 
     plt.show()
 
+
 def plot_explored_solutions(data_mean, data_std):
     width = 0.35
 
@@ -82,9 +87,9 @@ def plot_explored_solutions(data_mean, data_std):
     x = np.arange(len(instances))
 
     for i in range(3):
-        ax.bar(x + i*(width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
+        ax.bar(x + i * (width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
 
-    ax.set_xticks(x + (3//2)*width / 3)
+    ax.set_xticks(x + (3 // 2) * width / 3)
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średnia sprawdzonych rozwiązań')
@@ -92,6 +97,7 @@ def plot_explored_solutions(data_mean, data_std):
     ax.legend()
 
     plt.show()
+
 
 if __name__ == "__main__":
     alg_mean_cost = []
@@ -122,7 +128,7 @@ if __name__ == "__main__":
         std_explored_solutions = []
 
         for instance in instances:
-            cost,steps,explored_solutions, time = read_file("../results/"+name+"_"+instance+".txt")
+            cost, steps, explored_solutions, time = read_file("../results/" + name + "_" + instance + ".txt")
             mean_cost.append(np.mean(cost))
             min_cost.append(np.min(cost))
             std_cost.append(np.std(cost))
@@ -149,7 +155,6 @@ if __name__ == "__main__":
 
         alg_mean_explored_solutions.append(mean_explored_solutions)
         alg_std_explored_solutions.append(std_explored_solutions)
-
 
     plot_score(alg_mean_cost, alg_std_cost)
     plot_time(alg_mean_time, alg_std_time)
