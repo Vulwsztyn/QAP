@@ -47,17 +47,18 @@ func (assignment Assignment) translate() (result Assignment) {
 	return
 }
 
-func (assignment Assignment) getFirstBetterNeighbour(m1, m2 IntMat) (result Assignment, cost int, exists bool) {
+func (assignment Assignment) getFirstBetterNeighbour(m1, m2 IntMat) (result Assignment, cost int, solutionsExploredCount int, exists bool) {
 	currentCost, _ := calcCost(assignment, m1, m2)
 	for i := 0; i < defaultSize-1; i++ {
 		for j := i + 1; j < defaultSize; j++ {
 			tmp := assignment
 			tmp[i], tmp[j] = tmp[j], tmp[i]
 			tmpCost, _ := calcCost(tmp, m1, m2)
+			solutionsExploredCount += 1
 			if tmpCost < currentCost {
-				return tmp, tmpCost, true
+				return tmp, tmpCost, solutionsExploredCount, true
 			}
 		}
 	}
-	return assignment, currentCost, false
+	return assignment, currentCost, solutionsExploredCount, false
 }

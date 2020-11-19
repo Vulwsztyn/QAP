@@ -53,7 +53,7 @@ func fileReader(fileName string) (m1 IntMat, m2 IntMat, instanceSize int) {
 	return
 }
 
-func writeFile(results [][2]int, filename string) {
+func writeFile(results [][4]int, filename string) {
 	f, err := os.Create("results/" + filename + ".txt")
 	if err != nil {
 		fmt.Println(err)
@@ -61,7 +61,7 @@ func writeFile(results [][2]int, filename string) {
 	}
 
 	for _, value := range results {
-		_, err = f.WriteString(fmt.Sprint(value[0]) + " " + fmt.Sprint(value[1]) + "\n")
+		_, err = f.WriteString(fmt.Sprint(value[0]) + " " + fmt.Sprint(value[1]) + " " + fmt.Sprint(value[2]) + " " + fmt.Sprint(value[3]) + "\n")
 		if err != nil {
 			fmt.Println(err)
 			f.Close()
