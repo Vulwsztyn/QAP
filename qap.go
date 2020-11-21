@@ -6,11 +6,22 @@ import (
 	"time"
 )
 
-var instances = []string{"tai256c", "tho150", "wil50", "sko100c", "lipa80a", "nug30", "rou20", "kra32", "chr12c", "bur26e"}
+//var instances = []string{"tai256c", "tho150", "wil50", "sko100c", "lipa80a", "nug30", "rou20", "kra32", "chr12c", "bur26e"}
+var instances = []string{"bur26d", "kra30a", "lipa40a", "wil50", "lipa60a","lipa70a","sko81", "sko90","sko100a","esc128"}
+const instanceIndex = 3
+const defaultSize = int((instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((0-1)*(0-2)*(0-3)*(0-4)*(0-5)*(0-6)*(0-7)*(0-8)*(0-9))*26+
+	(instanceIndex-0)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((1-0)*(1-2)*(1-3)*(1-4)*(1-5)*(1-6)*(1-7)*(1-8)*(1-9))*30+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((2-0)*(2-1)*(2-3)*(2-4)*(2-5)*(2-6)*(2-7)*(2-8)*(2-9))*40+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((3-0)*(3-1)*(3-2)*(3-4)*(3-5)*(3-6)*(3-7)*(3-8)*(3-9))*50+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((4-0)*(4-1)*(4-2)*(4-3)*(4-5)*(4-6)*(4-7)*(4-8)*(4-9))*60+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((5-0)*(5-1)*(5-2)*(5-3)*(5-4)*(5-6)*(5-7)*(5-8)*(5-9))*70+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((6-0)*(6-1)*(6-2)*(6-3)*(6-4)*(6-5)*(6-7)*(6-8)*(6-9))*81+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-8)*(instanceIndex-9)/((7-0)*(7-1)*(7-2)*(7-3)*(7-4)*(7-5)*(7-6)*(7-8)*(7-9))*90+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-9)/((8-0)*(8-1)*(8-2)*(8-3)*(8-4)*(8-5)*(8-6)*(8-7)*(8-9))*100+
+	(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)/((9-0)*(9-1)*(9-2)*(9-3)*(9-4)*(9-5)*(9-6)*(9-7)*(9-8))*128)
 
 //var instanceSizes = []int{256,150,50,100,80,30,20,32,12,26}
 
-const defaultSize = 30
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
 
 func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int, int64) {
