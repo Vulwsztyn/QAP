@@ -31,17 +31,18 @@ func fileReader(fileName string) (m1 IntMat, m2 IntMat, instanceSize int) {
 
 	for scanner.Scan() {
 		row := strings.Fields(strings.TrimSpace(scanner.Text()))
-		if len(row) < instanceSize {
-			continue
-		}
-		for i, v := range row {
+		for _, v := range row {
 			if whichMatrix == 1 {
-				m1[rowNum][i], _ = strconv.Atoi(v)
+				m1[rowNum][columnNum], _ = strconv.Atoi(v)
 			} else {
-				m2[rowNum][i], _ = strconv.Atoi(v)
+				m2[rowNum][columnNum], _ = strconv.Atoi(v)
+			}
+			columnNum++
+			if columnNum >= defaultSize {
+				columnNum = 0
+				rowNum++
 			}
 		}
-		rowNum++
 		if rowNum >= instanceSize {
 			rowNum = 0
 			whichMatrix++
