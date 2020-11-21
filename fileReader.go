@@ -22,6 +22,7 @@ func fileReader(fileName string) (m1 IntMat, m2 IntMat, instanceSize int) {
 		}
 	}()
 
+	columnNum := 0
 	rowNum := 0
 	whichMatrix := 1
 	scanner := bufio.NewScanner(f)
