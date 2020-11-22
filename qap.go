@@ -67,6 +67,26 @@ func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, previousCostM
 	return
 }
 
+func minNeighbour(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, startIndex int) (result Assignment, cost int, costMatrix IntMat) {
+	index := 0
+	iCount := 0
+	firstIteration := true
+	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
+		for j := (i + 1) % defaultSize; j != positiveReminder(i-iCount, defaultSize); j = (j + 1) % defaultSize {
+			tmp := assignment
+			tmp[i], tmp[j] = tmp[j], tmp[i]
+			costTmp, matrixTmp := reCalcCost(tmp, m1, m2, previousCostMatrix, previousCost, [2]int{i, j})
+			if costTmp < cost || firstIteration {
+				result, cost, costMatrix = tmp, costTmp, matrixTmp
+				firstIteration = false
+			}
+			index++
+		}
+		iCount++
+	}
+	return
+}
+
 func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int, costMatrix IntMat) {
 	for i := 0; i < defaultSize; i++ {
 		for j := 0; j < defaultSize; j++ {
