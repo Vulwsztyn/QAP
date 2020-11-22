@@ -33,13 +33,10 @@ func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int
 	for ok := true; ok; {
 		exploredSolutions += neighbourCount - 1
 		bestNeighbour, bestNeighbourCost, bestNeighbourMatrix := minNeighbour(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
-		a,_ := calcCost(bestNeighbour,m1,m2)
-		fmt.Println(a,bestNeighbourCost, bestCost)
 		if bestNeighbourCost < bestCost {
 			currentAssignment = bestNeighbour
 			bestCost = bestNeighbourCost
 			costMatrix = bestNeighbourMatrix
-			fmt.Println(bestNeighbour)
 		} else {
 			ok = false
 		}
