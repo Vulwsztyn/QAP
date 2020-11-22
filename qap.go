@@ -247,7 +247,7 @@ func distance(assignment Assignment, assignment2 Assignment) (distance float64) 
 			distance++
 		}
 	}
-	distance /= defaultSize
+	distance /= float64(defaultSize)
 	return
 }
 
