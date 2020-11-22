@@ -55,15 +55,15 @@ func fileReader(fileName string) (m1 IntMat, m2 IntMat, instanceSize int) {
 	return
 }
 
-func writeFile(results [][5]int, filename string) {
+func writeFile(filename string, results [][5]int, dists []float64) {
 	f, err := os.Create("results/" + filename + ".txt")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	for _, value := range results {
-		_, err = f.WriteString(fmt.Sprint(value[0]) + " " + fmt.Sprint(value[1]) + " " + fmt.Sprint(value[2]) + " " + fmt.Sprint(value[3]) + " " + fmt.Sprint(value[4]) + "\n")
+	for i, value := range results {
+		_, err = f.WriteString(fmt.Sprint(value[0]) + " " + fmt.Sprint(value[1]) + " " + fmt.Sprint(value[2]) + " " + fmt.Sprint(value[3]) + " " + fmt.Sprint(value[4]) + " " + fmt.Sprint(dists[i]) + "\n")
 		if err != nil {
 			fmt.Println(err)
 			f.Close()
