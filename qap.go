@@ -276,40 +276,47 @@ func distance(assignment Assignment, assignment2 Assignment) (distance float64) 
 func measureTime(filename string, times int) {
 	m1, m2, _ := fileReader("instances/" + filename + ".dat")
 	var SArray, GArray, HArray, RWArray, RArray [][5]int
+	var SDists, GDists, HDists, RWDists, RDists []float64
 	for i := 0; i < times; i++ {
 		fmt.Println(i, "iteration...")
 		assignment := randomPermutation()
 		assignmentCost, _ := calcCost(assignment, m1, m2)
 		fmt.Println("Steepest")
-		_, costS, stepsS, exploreSolutionsS, timeS := steepest(assignment, m1, m2)
+		bestS, costS, stepsS, exploreSolutionsS, timeS := steepest(assignment, m1, m2)
 		fmt.Println("Greedy")
-		_, costG, stepsG, exploreSolutionsG, timeG := greedy(assignment, m1, m2)
+		bestG, costG, stepsG, exploreSolutionsG, timeG := greedy(assignment, m1, m2)
 		fmt.Println("Heuristic")
-		_, costH, stepsH, exploreSolutionsH, timeH := heuristic(assignment, m1, m2)
+		bestH, costH, stepsH, exploreSolutionsH, timeH := heuristic(assignment, m1, m2)
 		timeLimit := (timeS + timeG) / 2
 		fmt.Println("Random Walk")
-		_, costRW, exploreSolutionsRW, timeRW := randomWalk(assignment, timeLimit, m1, m2)
+		bestRW, costRW, exploreSolutionsRW, timeRW := randomWalk(assignment, timeLimit, m1, m2)
 		fmt.Println("Random")
-		_, costR, exploreSolutionsR, timeR := random(timeLimit, m1, m2)
+		bestR, costR, exploreSolutionsR, timeR := random(timeLimit, m1, m2)
 
 		GArray = append(GArray, [5]int{costG, stepsG, exploreSolutionsG, int(timeG), assignmentCost})
 		SArray = append(SArray, [5]int{costS, stepsS, exploreSolutionsS, int(timeS), assignmentCost})
 		HArray = append(HArray, [5]int{costH, stepsH, exploreSolutionsH, int(timeH), assignmentCost})
 		RWArray = append(RWArray, [5]int{costRW, -1, exploreSolutionsRW, int(timeRW), assignmentCost})
 		RArray = append(RArray, [5]int{costR, -1, exploreSolutionsR, int(timeR), assignmentCost})
+
+		GDists = append(GDists, distance(bestG,optimalAssignment()))
+		SDists = append(SDists, distance(bestS,optimalAssignment()))
+		HDists = append(HDists, distance(bestH,optimalAssignment()))
+		RWDists = append(RWDists, distance(bestRW,optimalAssignment()))
+		RDists = append(RDists, distance(bestR,optimalAssignment()))
 	}
-	writeFile(SArray, "S_"+filename)
-	writeFile(GArray, "G_"+filename)
-	writeFile(HArray, "H_"+filename)
-	writeFile(RWArray, "RW_"+filename)
-	writeFile(RArray, "R_"+filename)
+	writeFile("S_"+filename, SArray, SDists)
+	writeFile("G_"+filename, GArray, GDists)
+	writeFile("H_"+filename, HArray, HDists)
+	writeFile("RW_"+filename, RWArray, RWDists)
+	writeFile("R_"+filename, RArray, RDists)
 	fmt.Println("done")
 }
 
 func main() {
 	rand.Seed(123)
 	//filename := "instances/chr12a.dat"
-	//m1, m2, _ := fileReader(filename)
+	//m1, m2, _ := fileReader("instances/" + instances[instanceIndex] + ".dat")
 	//
 	//assignment := randomPermutation()
 	//assignmentS, costS, stepsS, timeS := steepest(assignment, m1, m2)
