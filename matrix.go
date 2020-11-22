@@ -26,6 +26,15 @@ func (m1 IntMat) permuteMatrix(assignment Assignment) (matrix IntMat) {
 	return
 }
 
+func (m1 IntMat) sum() (result int) {
+	for i := 0; i < defaultSize; i++ {
+		for j := 0; j < defaultSize; j++ {
+			result += m1[i][j]
+		}
+	}
+	return
+}
+
 func (m1 IntMat) String() string {
 	s := ""
 	for _, row := range m1 {
