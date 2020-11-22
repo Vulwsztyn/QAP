@@ -27,14 +27,21 @@ const neighbourCount = defaultSize * (defaultSize - 1) / 2
 func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int, int64) {
 	start := time.Now()
 	currentAssignment := assignment
-	var bestCost, bestNeighbourCost, bestNeighbourIndex, stepCount, exploredSolutions int
-	var costMatrix IntMat
-	for ok := true; ok; ok = bestNeighbourCost < bestCost {
-		bestCost, costMatrix = calcCost(currentAssignment, m1, m2)
-		neighbours, neighboursCosts := createNeighbours(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
-		exploredSolutions += neighbourCount
-		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
-		currentAssignment = neighbours[bestNeighbourIndex]
+	var stepCount, exploredSolutions int
+	bestCost, costMatrix := calcCost(currentAssignment, m1, m2)
+	for ok := true; ok; {
+		exploredSolutions += neighbourCount // TODO to nie jest do końca prawda, bo mogą sie powtarzać, jak starczy czasu to zaimplementuję tu set
+		bestNeighbour, bestNeighbourCost, bestNeighbourMatrix := minNeighbour(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
+		a,_ := calcCost(bestNeighbour,m1,m2)
+		fmt.Println(a,bestNeighbourCost, bestCost)
+		if bestNeighbourCost < bestCost {
+			currentAssignment = bestNeighbour
+			bestCost = bestNeighbourCost
+			costMatrix = bestNeighbourMatrix
+			fmt.Println(bestNeighbour)
+		} else {
+			ok = false
+		}
 		stepCount++
 	}
 	stop := time.Since(start)
