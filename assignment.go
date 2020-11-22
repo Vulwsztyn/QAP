@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Assignment [defaultSize]int
 
 func NewAssignment(value int) (result Assignment) {
@@ -61,4 +63,16 @@ func (assignment Assignment) getFirstBetterNeighbour(m1, m2 IntMat) (result Assi
 		}
 	}
 	return assignment, currentCost, solutionsExploredCount, false
+}
+
+func (assignment Assignment) String() string {
+	s := "["
+	for i, v := range assignment {
+		s += fmt.Sprintf("%d", v)
+		if i < defaultSize-1 {
+			s += ", "
+		}
+	}
+	s += "]"
+	return s
 }
