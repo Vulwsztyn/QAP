@@ -102,7 +102,7 @@ func reCalcCost(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix 
 	costMatrix := previousCostMatrix
 	for _, j := range indexes {
 		for i := 0; i < defaultSize; i++ {
-			if i != j {
+			if i != j && !(j == indexes[1] && i == indexes[0]) {
 				result -= previousCostMatrix[i][j]
 				result -= previousCostMatrix[j][i]
 
@@ -113,6 +113,11 @@ func reCalcCost(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix 
 				result += costMatrix[j][i]
 			}
 		}
+		result -= previousCostMatrix[j][j]
+
+		costMatrix[j][j] = m1[assignment[j]][assignment[j]] * m2[j][j]
+
+		result += costMatrix[j][j]
 	}
 	return result, costMatrix
 }
