@@ -10,7 +10,7 @@ import (
 var instances = []string{"bur26d", "kra30a", "tho40", "wil50", "lipa60a", "lipa70a", "tai80a", "sko90", "sko100a", "esc128"}
 
 const defaultSize = int(
-		(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((0-1)*(0-2)*(0-3)*(0-4)*(0-5)*(0-6)*(0-7)*(0-8)*(0-9))*26 +
+	(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((0-1)*(0-2)*(0-3)*(0-4)*(0-5)*(0-6)*(0-7)*(0-8)*(0-9))*26 +
 		(instanceIndex-0)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((1-0)*(1-2)*(1-3)*(1-4)*(1-5)*(1-6)*(1-7)*(1-8)*(1-9))*30 +
 		(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((2-0)*(2-1)*(2-3)*(2-4)*(2-5)*(2-6)*(2-7)*(2-8)*(2-9))*40 +
 		(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)*(instanceIndex-9)/((3-0)*(3-1)*(3-2)*(3-4)*(3-5)*(3-6)*(3-7)*(3-8)*(3-9))*50 +
@@ -20,6 +20,7 @@ const defaultSize = int(
 		(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-8)*(instanceIndex-9)/((7-0)*(7-1)*(7-2)*(7-3)*(7-4)*(7-5)*(7-6)*(7-8)*(7-9))*90 +
 		(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-9)/((8-0)*(8-1)*(8-2)*(8-3)*(8-4)*(8-5)*(8-6)*(8-7)*(8-9))*100 +
 		(instanceIndex-0)*(instanceIndex-1)*(instanceIndex-2)*(instanceIndex-3)*(instanceIndex-4)*(instanceIndex-5)*(instanceIndex-6)*(instanceIndex-7)*(instanceIndex-8)/((9-0)*(9-1)*(9-2)*(9-3)*(9-4)*(9-5)*(9-6)*(9-7)*(9-8))*128)
+
 //var instanceSizes = []int{256,150,50,100,80,30,20,32,12,26}
 
 const neighbourCount = defaultSize * (defaultSize - 1) / 2
@@ -299,17 +300,17 @@ func measureTime(filename string, times int) {
 		RWArray = append(RWArray, [5]int{costRW, -1, exploreSolutionsRW, int(timeRW), assignmentCost})
 		RArray = append(RArray, [5]int{costR, -1, exploreSolutionsR, int(timeR), assignmentCost})
 
-		GDists = append(GDists, distance(bestG,optimalAssignment()))
-		SDists = append(SDists, distance(bestS,optimalAssignment()))
-		HDists = append(HDists, distance(bestH,optimalAssignment()))
-		RWDists = append(RWDists, distance(bestRW,optimalAssignment()))
-		RDists = append(RDists, distance(bestR,optimalAssignment()))
+		GDists = append(GDists, distance(bestG, optimalAssignment()))
+		SDists = append(SDists, distance(bestS, optimalAssignment()))
+		HDists = append(HDists, distance(bestH, optimalAssignment()))
+		RWDists = append(RWDists, distance(bestRW, optimalAssignment()))
+		RDists = append(RDists, distance(bestR, optimalAssignment()))
 	}
-	writeFile("S_"+filename, SArray, SDists)
-	writeFile("G_"+filename, GArray, GDists)
-	writeFile("H_"+filename, HArray, HDists)
-	writeFile("RW_"+filename, RWArray, RWDists)
-	writeFile("R_"+filename, RArray, RDists)
+	writeFile("S_"+filename+"_"+fmt.Sprintf("%d", times), SArray, SDists)
+	writeFile("G_"+filename+"_"+fmt.Sprintf("%d", times), GArray, GDists)
+	writeFile("H_"+filename+"_"+fmt.Sprintf("%d", times), HArray, HDists)
+	writeFile("RW_"+filename+"_"+fmt.Sprintf("%d", times), RWArray, RWDists)
+	writeFile("R_"+filename+"_"+fmt.Sprintf("%d", times), RArray, RDists)
 	fmt.Println("done")
 }
 
@@ -328,7 +329,8 @@ func main() {
 	//fmt.Println(assignmentR, costR, stepsR, timeR)
 	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	measureTime(instances[instanceIndex], 1)
-	fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0,1,2, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3,19}))
+	measureTime(instances[instanceIndex], 300)
+
+	fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 19}))
 	fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}))
 }
