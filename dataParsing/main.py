@@ -5,6 +5,17 @@ instances = ["bur26d", "kra30a", "tho40", "wil50", "lipa60a", "lipa70a", "tai80a
 algorithms = ['S', 'G', 'H', 'R', 'RW']
 
 
+def read_distances(alg, instance):
+    dist = []
+    f = open("../results/" + alg + "_Sim_" + instance + ".txt", "r")
+    f1 = f.readlines()
+    i=0
+    for x in f1:
+        dist += map(float,x.split()[:i])
+        i+=1
+
+    return dist
+
 def read_instance(name, instance, size):
     time = []
     cost = []
@@ -21,7 +32,7 @@ def read_instance(name, instance, size):
         explored_solutions.append(int(x.split()[2]))
         time.append(int(x.split()[3]))
         init_result.append(int(x.split()[4]))
-        dist.append(float(x.split()[5]))
+        dist.append(1-float(x.split()[5]))
 
     return cost, steps, explored_solutions, time, init_result, dist
 
@@ -62,7 +73,7 @@ def plot_quality(data_mean, data_std):
     ax.set_ylabel('Jakość')
     plt.xticks(rotation=-45)
 
-    ax.legend()
+    ax.legend(loc= 'lower left')
 
 
     #plt.show()
@@ -84,7 +95,7 @@ def plot_quality_min(data_mean):
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Jakość')
-    ax.legend()
+    ax.legend(loc= 'lower left')
 
     plt.xticks(rotation=-45)
 
@@ -107,6 +118,8 @@ def plot_time(data_mean, data_std):
     ax.set_ylabel('Średni czas w mikrosekundach')
     ax.legend()
     plt.xticks(rotation=-45)
+
+    ax.set_yscale('log')
 
 
     #plt.show()
@@ -175,20 +188,62 @@ def plot_explored_solutions(data_mean, data_std):
     plt.xticks(rotation=-45)
 
     #plt.show()
+    plt.gcf().subplots_adjust(left=0.15)
     plt.savefig('2.5.png')
+
+def plot_explored_solutions_in_time(data_mean, data_std):
+    width = 0.6
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(instances))
+
+    for i in range(4):
+        ax.bar(x + i * (width / 4), data_mean[i], width / 4, yerr=data_std[i], label=['S', 'G', 'R', 'RW'][i])
+
+    ax.set_xticks(x + (4 // 2) * width / 4)
+    ax.set_xticklabels(instances)
+
+    ax.set_ylabel('Średnia sprawdzonych rozwiązań w czasie')
+    ax.legend()
+    plt.xticks(rotation=-45)
+
+    #plt.show()
+    plt.savefig('rozwiazania_w_czasie.png')
 
 def plot_init_result(alg_init_costs, alg_costs, label):
 
     fig, ax = plt.subplots()
+    # center_x = []
+    # center_y = []
+    #
+    # center_x.append(np.mean(alg_costs[0]))
+    # center_x.append(np.mean(alg_costs[1]))
+    #
+    # center_y.append(np.mean(alg_init_costs[0]))
+    # center_y.append(np.mean(alg_init_costs[1]))
 
-    ax.scatter(alg_costs[0], alg_init_costs[0], label='S')
-    ax.scatter(alg_costs[1], alg_init_costs[1], label='G')
+    ax.scatter(alg_costs[0], alg_init_costs[0], label='S', alpha=0.5)
+    ax.scatter(alg_costs[1], alg_init_costs[1], label='G', alpha=0.5)
 
+    # ax.scatter(center_x[0], center_y[0], marker="x", color='r', label='S centroid')
+    # ax.scatter(center_x[1], center_y[1], marker="x", color='g', label='G centroid')
 
     ax.set_ylabel('Końcowa jakość')
     ax.set_xlabel('Początkowa jakość')
 
+    if str(i)=='5':
+        ax.set_ylim(0.986, 0.9925)
+        ax.set_xlim(0.97, 0.978)
+
+    if str(i)=='6':
+        ax.set_ylim(0.988, 0.9925)
+        ax.set_xlim(0.9725, 0.98)
+
+
     ax.legend()
+
+    if label=='1':
+        ax.set_yticks([x for x in ax.get_yticks() if x <= 1])
 
     plt.savefig('3.'+label+'.png')
 
@@ -231,15 +286,28 @@ def plot_dists_optimal(qualities, dists, label):
     fig, ax = plt.subplots()
 
     for i in range(len(qualities)):
-        ax.scatter(qualities[i], dists[i], label=algorithms[i])
+        jittered_dists = np.array(dists[i]) + 0.005 * np.random.rand(len(np.array(dists[i]))) - 0.0025
+        ax.scatter(qualities[i], jittered_dists, label=algorithms[i], alpha=0.3)
 
 
-    ax.set_ylabel('Dystans')
+    ax.set_ylabel('Podobieństwo')
     ax.set_xlabel('Jakość')
 
     ax.legend()
 
     plt.savefig('5.'+label+'.png')
+
+def plot_dists_violin(dists, label):
+    fig, ax = plt.subplots()
+
+    ax.violinplot(dists, [1,2], points=len(dists[0]), widths=0.6, showmeans=True, showextrema=True, showmedians=True)
+
+
+    ax.set_ylabel('Podobieństwo')
+    ax.set_xticks([1,2])
+    ax.set_xticklabels(algorithms[:2])
+
+    plt.savefig('6.'+label+'.png')
 
 if __name__ == "__main__":
     alg_mean_quality = []
@@ -257,6 +325,9 @@ if __name__ == "__main__":
 
     alg_mean_explored_solutions = []
     alg_std_explored_solutions = []
+
+    alg_mean_explored_solutions_in_time = []
+    alg_std_explored_solutions_in_time = []
 
     best_solutions = []
 
@@ -281,6 +352,9 @@ if __name__ == "__main__":
         mean_explored_solutions = []
         std_explored_solutions = []
 
+        mean_explored_solutions_in_time = []
+        std_explored_solutions_in_time = []
+
         i = 0
         for instance in instances:
             cost, steps, explored_solutions, time, init_cost, _ = read_instance(name, instance, "10")
@@ -298,6 +372,9 @@ if __name__ == "__main__":
             if name != 'H':
                 mean_explored_solutions.append(np.mean(explored_solutions))
                 std_explored_solutions.append(np.std(explored_solutions))
+
+                mean_explored_solutions_in_time.append(np.mean(np.true_divide(explored_solutions,time)))
+                std_explored_solutions_in_time.append(np.std(np.true_divide(explored_solutions,time)))
 
 
             mean_time.append(np.mean(time))
@@ -325,6 +402,8 @@ if __name__ == "__main__":
         if name != 'H':
             alg_mean_explored_solutions.append(mean_explored_solutions)
             alg_std_explored_solutions.append(std_explored_solutions)
+            alg_mean_explored_solutions_in_time.append(mean_explored_solutions_in_time)
+            alg_std_explored_solutions_in_time.append(std_explored_solutions_in_time)
 
 
     plot_quality(alg_mean_quality, alg_std_quality)
@@ -333,9 +412,10 @@ if __name__ == "__main__":
     plot_effectiveness(alg_mean_effectiveness, alg_std_effectiveness)
     plot_steps(alg_mean_steps, alg_std_steps)
     plot_explored_solutions(alg_mean_explored_solutions, alg_std_explored_solutions)
+    plot_explored_solutions_in_time(alg_mean_explored_solutions_in_time,alg_std_explored_solutions_in_time)
 
     i=0
-    for instance in instances[:5]:
+    for instance in instances[:6]:
         i+=1
         S_cost, _, _, _, S_init_cost, _ = read_instance(algorithms[0], instance, "300")
         G_cost, _, _, _, G_init_cost, _ = read_instance(algorithms[1], instance, "300")
@@ -349,7 +429,7 @@ if __name__ == "__main__":
         plot_costs([S_quality, G_quality], str(i))
 
     i = 0
-    for instance in instances[:5]:
+    for instance in instances[:6]:
         i += 1
         _, score = read_solution(instance)
         qualities = []
@@ -359,6 +439,15 @@ if __name__ == "__main__":
             qualities.append([score / x for x in cost])
             dists.append(dist)
         plot_dists_optimal(qualities, dists, str(i))
+
+    i = 0
+    for instance in instances[:6]:
+        i += 1
+        dists = []
+        for alg in algorithms[:2]:
+            dist = read_distances(alg, instance)
+            dists.append(dist)
+        plot_dists_violin(dists, str(i))
 
 
     plt.show()

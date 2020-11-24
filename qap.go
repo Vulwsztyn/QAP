@@ -330,7 +330,7 @@ func main() {
 	//fmt.Println(assignmentR, costR, stepsR, timeR)
 	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	measureTime(instances[instanceIndex], 300)
+	measureTime(instances[instanceIndex], 10)
 
 	fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 19}))
 	fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}))
