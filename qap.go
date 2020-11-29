@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"time"
 )
 
 //var instances = []string{"tai256c", "tho150", "wil50", "sko100c", "lipa80a", "nug30", "rou20", "kra32", "chr12c", "bur26e"}
@@ -39,239 +38,6 @@ func optimalAssignment() (assignment Assignment) {
 		{79, 74, 65, 78, 70, 72, 76, 68, 19, 5, 48, 24, 114, 80, 121, 118, 84, 90, 31, 27, 47, 86, 8, 4, 122, 125, 15, 25, 46, 93, 119, 91, 42, 1, 10, 71, 11, 26, 127, 45, 61, 56, 20, 85, 29, 57, 97, 9, 124, 77, 115, 44, 83, 69, 40, 53, 105, 98, 37, 17, 51, 33, 6, 104, 35, 109, 34, 62, 30, 89, 32, 110, 54, 59, 95, 22, 82, 116, 7, 81, 66, 28, 113, 96, 50, 107, 75, 112, 100, 123, 13, 64, 52, 87, 106, 58, 39, 43, 126, 36, 41, 23, 111, 103, 63, 73, 14, 16, 94, 18, 49, 12, 3, 101, 102, 38, 55, 67, 108, 117, 99, 120, 0, 92, 2, 60, 88, 21},
 	}
 	copy(assignment[:], bestAssignments[instanceIndex])
-	return
-}
-
-func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int, int64) {
-	start := time.Now()
-	currentAssignment := assignment
-	var stepCount, exploredSolutions int
-	bestCost, costMatrix := calcCost(currentAssignment, m1, m2)
-	exploredSolutions = 1
-	for ok := true; ok; {
-		exploredSolutions += neighbourCount - 1
-		bestNeighbour, bestNeighbourCost, bestNeighbourMatrix := minNeighbour(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))
-		if bestNeighbourCost < bestCost {
-			currentAssignment = bestNeighbour
-			bestCost = bestNeighbourCost
-			costMatrix = bestNeighbourMatrix
-		} else {
-			ok = false
-		}
-		stepCount++
-	}
-	stop := time.Since(start)
-	return currentAssignment, bestCost, stepCount, exploredSolutions, stop.Microseconds()
-}
-
-func positiveReminder(a, b int) (result int) {
-	result = a % b
-	if result < 0 {
-		result += b
-	}
-	return
-}
-
-func createNeighbours(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, startIndex int) (result [neighbourCount]Assignment, costs [neighbourCount]int) {
-	index := 0
-	iCount := 0
-	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
-		//fmt.Println(i)
-		for j := (i + 1) % defaultSize; j != positiveReminder(i-iCount, defaultSize); j = (j + 1) % defaultSize {
-			tmp := assignment
-			tmp[i], tmp[j] = tmp[j], tmp[i]
-			//fmt.Println(i, j)
-			costs[index], _ = reCalcCost(tmp, m1, m2, previousCostMatrix, previousCost, [2]int{i, j})
-			result[index] = tmp
-			index++
-		}
-		iCount++
-	}
-	return
-}
-
-func minNeighbour(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, startIndex int) (result Assignment, cost int, costMatrix IntMat) {
-	index := 0
-	iCount := 0
-	firstIteration := true
-	for i := startIndex; index < neighbourCount; i = (i + 1) % defaultSize {
-		for j := (i + 1) % defaultSize; j != positiveReminder(i-iCount, defaultSize); j = (j + 1) % defaultSize {
-			tmp := assignment
-			tmp[i], tmp[j] = tmp[j], tmp[i]
-			costTmp, matrixTmp := reCalcCost(tmp, m1, m2, previousCostMatrix, previousCost, [2]int{i, j})
-			if costTmp < cost || firstIteration {
-				result, cost, costMatrix = tmp, costTmp, matrixTmp
-				firstIteration = false
-			}
-			index++
-		}
-		iCount++
-	}
-	return
-}
-
-func calcCost(assignment Assignment, m1 IntMat, m2 IntMat) (result int, costMatrix IntMat) {
-	for i := 0; i < defaultSize; i++ {
-		for j := 0; j < defaultSize; j++ {
-			costMatrix[i][j] = m1[assignment[i]][assignment[j]] * m2[i][j]
-			result += costMatrix[i][j]
-		}
-	}
-	return
-}
-
-func reCalcCost(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, indexes [2]int) (int, IntMat) {
-	result := previousCost
-	costMatrix := previousCostMatrix
-	for _, j := range indexes {
-		for i := 0; i < defaultSize; i++ {
-			if i != j && !(j == indexes[1] && i == indexes[0]) {
-				result -= previousCostMatrix[i][j]
-				result -= previousCostMatrix[j][i]
-
-				costMatrix[i][j] = m1[assignment[i]][assignment[j]] * m2[i][j]
-				costMatrix[j][i] = m1[assignment[j]][assignment[i]] * m2[j][i]
-
-				result += costMatrix[i][j]
-				result += costMatrix[j][i]
-			}
-		}
-		result -= previousCostMatrix[j][j]
-
-		costMatrix[j][j] = m1[assignment[j]][assignment[j]] * m2[j][j]
-
-		result += costMatrix[j][j]
-	}
-	return result, costMatrix
-}
-
-func makeRange(min, max int) []int {
-	_range := make([]int, max-min)
-	for i := range _range {
-		_range[i] = min + i
-	}
-	return _range
-}
-
-func randomPermutation() Assignment {
-	_range := makeRange(0, defaultSize)
-	var result [defaultSize]int
-	for i := 0; i < defaultSize; i++ {
-		j := rand.Intn(defaultSize - i)
-		result[i] = _range[j]
-		_range[j] = _range[len(_range)-1-i]
-	}
-	return result
-}
-
-func greedy(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int, int64) {
-	start := time.Now()
-	bestAssignment := assignment
-	var exists bool
-	var cost, stepCount, solutionsExplored, solutionsExploredCurrentIteration int
-	for ok := true; ok; {
-		bestAssignment, cost, solutionsExploredCurrentIteration, exists = bestAssignment.getFirstBetterNeighbour(m1, m2)
-		solutionsExplored += solutionsExploredCurrentIteration
-		ok = exists
-		stepCount++
-	}
-	stop := time.Since(start)
-	return bestAssignment, cost, stepCount, solutionsExplored, stop.Microseconds()
-}
-
-func heuristic(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int, int64) {
-	start := time.Now()
-	currentAssignment := assignment
-	var bestCost, bestNeighbourCost, bestNeighbourIndex, stepCount, exploredSolutions int
-	var costMatrix IntMat
-
-	for ok := true; ok; ok = bestNeighbourCost < bestCost {
-		bestCost, costMatrix = calcCost(currentAssignment, m1, m2)
-		var temp [defaultSize]int
-		for i := 0; i < defaultSize; i++ {
-			for j := 0; j < defaultSize; j++ {
-				temp[i] += costMatrix[i][j] + costMatrix[j][i]
-			}
-		}
-
-		_, maxi := max(temp[:])
-		neighbours, neighboursCosts := createNeighboursHeuristic(currentAssignment, m1, m2, costMatrix, bestCost, maxi)
-		exploredSolutions += len(neighbours)
-		bestNeighbourCost, bestNeighbourIndex = min(neighboursCosts[:])
-		currentAssignment = neighbours[bestNeighbourIndex]
-		stepCount++
-	}
-	stop := time.Since(start)
-	return currentAssignment, bestCost, stepCount, exploredSolutions, stop.Microseconds()
-}
-
-func createNeighboursHeuristic(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, i int) (result [defaultSize - 1]Assignment, costs [defaultSize - 1]int) {
-	index := 0
-	iCount := 0
-	for j := (i + 1) % defaultSize; j != positiveReminder(i-iCount, defaultSize); j = (j + 1) % defaultSize {
-		tmp := assignment
-		tmp[i], tmp[j] = tmp[j], tmp[i]
-		costs[index], _ = reCalcCost(tmp, m1, m2, previousCostMatrix, previousCost, [2]int{i, j})
-		result[index] = tmp
-		index++
-	}
-	iCount++
-	return
-}
-
-func random(timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
-	start := time.Now()
-	var bestCost, stepCount int
-	var bestAssignment Assignment
-	stop := time.Since(start)
-	for ok := true; ok; {
-		assignment := randomPermutation()
-		cost, _ := calcCost(assignment, m1, m2)
-		if stepCount == 0 || bestCost > cost {
-			bestCost = cost
-			bestAssignment = assignment
-		}
-		stop = time.Since(start)
-		ok = stop.Microseconds() < timeLimit
-		stepCount++
-	}
-	return bestAssignment, bestCost, stepCount, stop.Microseconds()
-}
-
-func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
-	start := time.Now()
-	currentAssignment := assignment
-	var bestCost, stepCount int
-	var bestAssignment Assignment
-	stop := time.Since(start)
-	for ok := true; ok; {
-		i := rand.Intn(defaultSize)
-		j := rand.Intn(defaultSize - 1)
-		if j >= i {
-			j++
-		}
-		currentAssignment[i], currentAssignment[j] = currentAssignment[j], currentAssignment[i]
-		cost, _ := calcCost(assignment, m1, m2)
-		if stepCount == 0 || bestCost > cost {
-			bestCost = cost
-			bestAssignment = assignment
-		}
-		//fmt.Println(assignment, currentAssignment, bestCost)
-		stop = time.Since(start)
-		ok = stop.Microseconds() < timeLimit
-		stepCount++
-
-	}
-	return bestAssignment, bestCost, stepCount, stop.Microseconds()
-}
-
-func distance(assignment Assignment, assignment2 Assignment) (distance float64) {
-	for i, v := range assignment {
-		if assignment2[i] != v {
-			distance++
-		}
-	}
-	distance /= float64(defaultSize)
 	return
 }
 
@@ -324,9 +90,9 @@ func similarities(filename string, times int) {
 		assignment := randomPermutation()
 		//assignmentCost, _ := calcCost(assignment, m1, m2)
 		fmt.Println("Steepest")
-		bestS, _,_,_,_ := steepest(assignment, m1, m2)
+		bestS, _, _, _, _ := steepest(assignment, m1, m2)
 		fmt.Println("Greedy")
-		bestG, _,_,_,_ := greedy(assignment, m1, m2)
+		bestG, _, _, _, _ := greedy(assignment, m1, m2)
 		//fmt.Println("Heuristic")
 		//bestH, costH, stepsH, exploreSolutionsH, timeH := heuristic(assignment, m1, m2)
 		//timeLimit := (timeS + timeG) / 2
@@ -354,7 +120,7 @@ func similarities(filename string, times int) {
 	//writeFile("R_"+filename, RArray, RDists)
 	fmt.Println(GArray)
 	fmt.Println(SArray)
-	println("S_Sim"+filename)
+	println("S_Sim" + filename)
 	writeSimilaritiesFile("S_Sim_"+filename, SArray)
 	writeSimilaritiesFile("G_Sim_"+filename, GArray)
 	fmt.Println("done")
