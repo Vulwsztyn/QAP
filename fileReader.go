@@ -77,3 +77,34 @@ func writeFile(filename string, results [][5]int, dists []float64) {
 		return
 	}
 }
+
+func writeSimilaritiesFile(filename string, results []Assignment) {
+	f, err := os.Create("results/" + filename + ".txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, v := range results {
+		for _, w := range results {
+			_, err = f.WriteString(fmt.Sprint(1 - distance(v,w)) + " ")
+			if err != nil {
+				fmt.Println(err)
+				f.Close()
+				return
+			}
+		}
+		_, err = f.WriteString("\n")
+		if err != nil {
+			fmt.Println(err)
+			f.Close()
+			return
+		}
+	}
+
+	err = f.Close()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
