@@ -38,8 +38,10 @@ func random(timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
 func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignment, int, int, int64) {
 	start := time.Now()
 	currentAssignment := assignment
-	var bestCost, stepCount int
-	var bestAssignment Assignment
+	currentCost, costMatrix := calcCost(assignment, m1, m2)
+	var stepCount int
+	bestCost := currentCost
+	bestAssignment := assignment
 	stop := time.Since(start)
 	for ok := true; ok; {
 		i := rand.Intn(defaultSize)
@@ -48,10 +50,10 @@ func randomWalk(assignment Assignment, timeLimit int64, m1, m2 IntMat) (Assignme
 			j++
 		}
 		currentAssignment[i], currentAssignment[j] = currentAssignment[j], currentAssignment[i]
-		cost, _ := calcCost(assignment, m1, m2)
-		if stepCount == 0 || bestCost > cost {
-			bestCost = cost
-			bestAssignment = assignment
+		currentCost, costMatrix = reCalcCost(currentAssignment, m1, m2, costMatrix, currentCost, [2]int{i, j})
+		if bestCost > currentCost {
+			bestCost = currentCost
+			bestAssignment = currentAssignment
 		}
 		//fmt.Println(assignment, currentAssignment, bestCost)
 		stop = time.Since(start)
