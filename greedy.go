@@ -18,15 +18,15 @@ func greedy(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int, in
 }
 
 func getFirstBetterNeighbour(assignment Assignment, m1 IntMat, m2 IntMat) (result Assignment, cost int, solutionsExploredCount int, exists bool) {
-	currentCost, _ := calcCost(assignment, m1, m2)
+	currentCost, costMatrix := calcCost(assignment, m1, m2)
 	for i := 0; i < defaultSize-1; i++ {
 		for j := i + 1; j < defaultSize; j++ {
 			tmp := assignment
 			tmp[i], tmp[j] = tmp[j], tmp[i]
-			tmpCost, _ := calcCost(tmp, m1, m2)
+			costTmp, _ := reCalcCost(tmp, m1, m2, costMatrix, currentCost, [2]int{i, j})
 			solutionsExploredCount += 1
-			if tmpCost < currentCost {
-				return tmp, tmpCost, solutionsExploredCount, true
+			if costTmp < currentCost {
+				return tmp, costTmp, solutionsExploredCount, true
 			}
 		}
 	}
