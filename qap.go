@@ -43,12 +43,14 @@ func optimalAssignment() (assignment Assignment) {
 
 func measureTime(filename string, times int) {
 	m1, m2, _ := fileReader("instances/" + filename + ".dat")
-	var SArray, GArray, HArray, RWArray, RArray [][5]int
-	var SDists, GDists, HDists, RWDists, RDists []float64
+	var SAArray, SArray, GArray, HArray, RWArray, RArray [][5]int
+	var SADists, SDists, GDists, HDists, RWDists, RDists []float64
 	for i := 0; i < times; i++ {
 		fmt.Println(i, "iteration...")
 		assignment := randomPermutation()
 		assignmentCost, _ := calcCost(assignment, m1, m2)
+		fmt.Println("SA")
+		bestSA, costSA, stepsSA, exploreSolutionsSA, timeSA := SA(assignment, m1, m2, neighbourCount, 0.95, 10, 0.01)
 		fmt.Println("Steepest")
 		bestS, costS, stepsS, exploreSolutionsS, timeS := steepest(assignment, m1, m2)
 		fmt.Println("Greedy")
@@ -61,18 +63,21 @@ func measureTime(filename string, times int) {
 		fmt.Println("Random")
 		bestR, costR, exploreSolutionsR, timeR := random(timeLimit, m1, m2)
 
+		SAArray = append(SArray, [5]int{costSA, stepsSA, exploreSolutionsSA, int(timeSA), assignmentCost})
 		GArray = append(GArray, [5]int{costG, stepsG, exploreSolutionsG, int(timeG), assignmentCost})
 		SArray = append(SArray, [5]int{costS, stepsS, exploreSolutionsS, int(timeS), assignmentCost})
 		HArray = append(HArray, [5]int{costH, stepsH, exploreSolutionsH, int(timeH), assignmentCost})
 		RWArray = append(RWArray, [5]int{costRW, -1, exploreSolutionsRW, int(timeRW), assignmentCost})
 		RArray = append(RArray, [5]int{costR, -1, exploreSolutionsR, int(timeR), assignmentCost})
 
+		SADists = append(SADists, distance(bestSA, optimalAssignment()))
 		GDists = append(GDists, distance(bestG, optimalAssignment()))
 		SDists = append(SDists, distance(bestS, optimalAssignment()))
 		HDists = append(HDists, distance(bestH, optimalAssignment()))
 		RWDists = append(RWDists, distance(bestRW, optimalAssignment()))
 		RDists = append(RDists, distance(bestR, optimalAssignment()))
 	}
+	writeFile("SA_"+filename+"_"+fmt.Sprintf("%d", times), SAArray, SADists)
 	writeFile("S_"+filename+"_"+fmt.Sprintf("%d", times), SArray, SDists)
 	writeFile("G_"+filename+"_"+fmt.Sprintf("%d", times), GArray, GDists)
 	writeFile("H_"+filename+"_"+fmt.Sprintf("%d", times), HArray, HDists)
@@ -141,8 +146,8 @@ func main() {
 	//fmt.Println(assignmentR, costR, stepsR, timeR)
 	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	measureTime(instances[instanceIndex], 0)
+	measureTime(instances[instanceIndex], 1)
 
-	fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 19}))
-	fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}))
+	//fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 19}))
+	//fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}))
 }
