@@ -8,9 +8,9 @@ import (
 func steepest(assignment Assignment, m1 IntMat, m2 IntMat) (Assignment, int, int, int, int64) {
 	start := time.Now()
 	currentAssignment := assignment
-	var stepCount, exploredSolutions int
+	var stepCount int
 	bestCost, costMatrix := calcCost(currentAssignment, m1, m2)
-	exploredSolutions = 1
+	exploredSolutions := 1
 	for ok := true; ok; {
 		exploredSolutions += neighbourCount - 1
 		bestNeighbour, bestNeighbourCost, bestNeighbourMatrix := minNeighbour(currentAssignment, m1, m2, costMatrix, bestCost, rand.Intn(defaultSize))

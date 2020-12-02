@@ -13,7 +13,8 @@ func SA(assignment Assignment, m1, m2 IntMat, L int, alfa float64, P int, minc f
 	start := time.Now()
 	bestAssignment := assignment
 	currentCost, costMatrix := calcCost(bestAssignment, m1, m2)
-	var stepCount, solutionsExplored, breakCounter int
+	var stepCount, breakCounter int
+	solutionsExplored := 1
 	for true {
 		for i := 0; i < L; i++ {
 			newAssignment, newCost, newCostMatrix := getRandomNeighbour(bestAssignment, m1, m2, costMatrix, currentCost)
