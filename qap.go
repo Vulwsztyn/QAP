@@ -62,6 +62,8 @@ func measureTime(filename string, times int) {
 		bestRW, costRW, exploreSolutionsRW, timeRW := randomWalk(assignment, timeLimit, m1, m2)
 		fmt.Println("Random")
 		bestR, costR, exploreSolutionsR, timeR := random(timeLimit, m1, m2)
+		fmt.Println("TS")
+		bestTS, costTS, stepsTS, exploreSolutionsTS, timeTS := TS(assignment, m1, m2)
 
 		SAArray = append(SArray, [5]int{costSA, stepsSA, exploreSolutionsSA, int(timeSA), assignmentCost})
 		GArray = append(GArray, [5]int{costG, stepsG, exploreSolutionsG, int(timeG), assignmentCost})
@@ -69,6 +71,7 @@ func measureTime(filename string, times int) {
 		HArray = append(HArray, [5]int{costH, stepsH, exploreSolutionsH, int(timeH), assignmentCost})
 		RWArray = append(RWArray, [5]int{costRW, -1, exploreSolutionsRW, int(timeRW), assignmentCost})
 		RArray = append(RArray, [5]int{costR, -1, exploreSolutionsR, int(timeR), assignmentCost})
+		TSArray = append(TSArray, [5]int{costTS, stepsTS, exploreSolutionsTS, int(timeTS), assignmentCost})
 
 		SADists = append(SADists, distance(bestSA, optimalAssignment()))
 		GDists = append(GDists, distance(bestG, optimalAssignment()))
