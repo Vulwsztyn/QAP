@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 instances = ['chr12c', 'nug30']
-algorithms = ['S', 'G', 'H', 'R', 'RW']
+algorithms = ['S', 'G', 'H', 'R', 'RW', 'TS']
 
 
 def read_file(file_name):
