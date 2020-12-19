@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 instances = ["bur26d", "kra30a", "tho40", "wil50", "lipa60a", "lipa70a", "tai80a", "sko90", "sko100a", "esc128"]
-algorithms = ['S', 'G', 'H', 'R', 'RW', 'SA']
+algorithms = ['S', 'G', 'H', 'R', 'RW', 'SA', 'TS']
 
 
 def read_distances(alg, instance):
@@ -57,12 +57,12 @@ def plot_quality(data_mean, data_std):
     width = 0.6
 
     fig, ax = plt.subplots()
-    x = np.arange(len(instances))
+    x = np.arange(len(instances)//2)
 
     for i in range(len(algorithms)):
         # ax.plot(x + i * (width / len(algorithms)), data_mean[i], '--o', label=algorithms[i])
 
-        ax.bar(x + i * (width / len(algorithms)), data_mean[i], width / len(algorithms), yerr=data_std[i],
+        ax.bar(x + i * (width / len(algorithms)), data_mean[i][:5], width / len(algorithms), yerr=data_std[i][:5],
                label=algorithms[i])
 
         # plt.plot(x + i * (width / len(algorithms)), data_mean[i], '_')
@@ -71,22 +71,45 @@ def plot_quality(data_mean, data_std):
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Jakość')
+    ax.set_ylim(0.7, 1)
     plt.xticks(rotation=-45)
 
     ax.legend(loc= 'lower left')
 
+    plt.savefig('2.1.1.1.png')
 
-    #plt.show()
-    plt.savefig('2.1.1.png')
+    fig, ax = plt.subplots()
+    x = np.arange(len(instances)//2)
+
+    for i in range(len(algorithms)):
+        # ax.plot(x + i * (width / len(algorithms)), data_mean[i], '--o', label=algorithms[i])
+
+        ax.bar(x + i * (width / len(algorithms)), data_mean[i][5:], width / len(algorithms), yerr=data_std[i][5:],
+               label=algorithms[i])
+
+        # plt.plot(x + i * (width / len(algorithms)), data_mean[i], '_')
+
+    ax.set_xticks(x + (len(algorithms) // 2) * width / len(algorithms))
+    ax.set_xticklabels(instances[5:])
+
+    ax.set_ylabel('Jakość')
+    ax.set_ylim(0.2, 1)
+    plt.xticks(rotation=-45)
+
+    ax.legend(loc= 'lower left')
+
+    plt.savefig('2.1.1.2.png')
 
 def plot_quality_min(data_mean):
     width = 0.6
 
     fig, ax = plt.subplots()
-    x = np.arange(len(instances))
+    x = np.arange(len(instances)//2)
 
     for i in range(len(algorithms)):
-        ax.bar(x + i * (width / len(algorithms)), data_mean[i], width / len(algorithms),
+        # ax.plot(x + i * (width / len(algorithms)), data_mean[i], '--o', label=algorithms[i])
+
+        ax.bar(x + i * (width / len(algorithms)), data_mean[i][:5], width / len(algorithms),
                label=algorithms[i])
 
         # plt.plot(x + i * (width / len(algorithms)), data_mean[i], '_')
@@ -95,24 +118,50 @@ def plot_quality_min(data_mean):
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Jakość')
-    ax.legend(loc= 'lower left')
-
+    ax.set_ylim(0.7, 1)
     plt.xticks(rotation=-45)
 
-    #plt.show()
-    plt.savefig('2.1.2.png')
+    ax.legend(loc= 'lower left')
+
+    plt.savefig('2.1.2.1.png')
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(instances)//2)
+
+    for i in range(len(algorithms)):
+        # ax.plot(x + i * (width / len(algorithms)), data_mean[i], '--o', label=algorithms[i])
+
+        ax.bar(x + i * (width / len(algorithms)), data_mean[i][5:], width / len(algorithms),
+               label=algorithms[i])
+
+        # plt.plot(x + i * (width / len(algorithms)), data_mean[i], '_')
+
+    ax.set_xticks(x + (len(algorithms) // 2) * width / len(algorithms))
+    ax.set_xticklabels(instances[5:])
+
+    ax.set_ylabel('Jakość')
+    ax.set_ylim(0.2, 1)
+    plt.xticks(rotation=-45)
+
+    ax.legend(loc= 'lower left')
+
+    plt.savefig('2.1.2.2.png')
 
 
 def plot_time(data_mean, data_std):
     width = 0.6
 
     fig, ax = plt.subplots()
-    x = np.arange(len(instances))
+    x = np.arange(len(instances)//2)
 
-    for i in range(3):
-        ax.bar(x + i * (width / 3), data_mean[i], width / 3, yerr=data_std[i], label=algorithms[i])
-
-    ax.set_xticks(x + (3 // 2) * width / 3)
+    j=0
+    for i in range(5):
+        if i > 2:
+            i += 2
+        print(i)
+        ax.bar(x + j * (width / 5), data_mean[i][:5], width / 5, yerr=data_std[i][:5], label=algorithms[i])
+        j+=1
+    ax.set_xticks(x + (5 // 2) * width / 5)
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średni czas w mikrosekundach')
@@ -121,19 +170,40 @@ def plot_time(data_mean, data_std):
 
     ax.set_yscale('log')
 
+    plt.savefig('2.2.1.png')
 
-    #plt.show()
-    plt.savefig('2.2.png')
+    width = 0.6
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(instances)//2)
+
+    j=0
+    for i in range(5):
+        if i > 2:
+            i += 2
+        print(i)
+        ax.bar(x + j * (width / 5), data_mean[i][5:], width / 5, yerr=data_std[i][5:], label=algorithms[i])
+        j+=1
+    ax.set_xticks(x + (3 // 2) * width / 3)
+    ax.set_xticklabels(instances[5:])
+
+    ax.set_ylabel('Średni czas w mikrosekundach')
+    ax.legend()
+    plt.xticks(rotation=-45)
+
+    ax.set_yscale('log')
+
+    plt.savefig('2.2.2.png')
 
 
 def plot_effectiveness(data_mean, data_std):
     width = 0.6
 
     fig, ax = plt.subplots()
-    x = np.arange(len(instances))
+    x = np.arange(len(instances)//2)
 
     for i in range(len(algorithms)):
-        ax.bar(x + i * (width / len(algorithms)), data_mean[i], width / len(algorithms),  yerr=data_std[i],
+        ax.bar(x + i * (width / len(algorithms)), data_mean[i][:5], width / len(algorithms),  yerr=data_std[i][:5],
                label=algorithms[i])
 
         # plt.plot(x + i * (width / len(algorithms)), data_mean[i], '_')
@@ -148,7 +218,28 @@ def plot_effectiveness(data_mean, data_std):
     ax.set_yscale('log')
 
     #plt.show()
-    plt.savefig('2.3.png')
+    plt.savefig('2.3.1.png')
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(instances)//2)
+
+    for i in range(len(algorithms)):
+        ax.bar(x + i * (width / len(algorithms)), data_mean[i][5:], width / len(algorithms),  yerr=data_std[i][5:],
+               label=algorithms[i])
+
+        # plt.plot(x + i * (width / len(algorithms)), data_mean[i], '_')
+
+    ax.set_xticks(x + (len(algorithms) // 2) * width / len(algorithms))
+    ax.set_xticklabels(instances[5:])
+
+    ax.set_ylabel('Efektywność')
+    ax.legend()
+    plt.xticks(rotation=-45)
+
+    ax.set_yscale('log')
+
+    #plt.show()
+    plt.savefig('2.3.2.png')
 
 
 def plot_steps(data_mean, data_std):
@@ -175,21 +266,41 @@ def plot_explored_solutions(data_mean, data_std):
     width = 0.6
 
     fig, ax = plt.subplots()
-    x = np.arange(len(instances))
+    x = np.arange(len(instances)//2)
 
-    for i in range(4):
-        ax.bar(x + i * (width / 4), data_mean[i], width / 4, yerr=data_std[i], label=['S', 'G', 'R', 'RW'][i])
+    for i in range(6):
+        ax.bar(x + i * (width / 6), data_mean[i][:5], width / 6, yerr=data_std[i][:5], label=['S', 'G', 'R', 'RW', 'SA', 'TS'][i])
 
-    ax.set_xticks(x + (4 // 2) * width / 4)
+    ax.set_xticks(x + (6 // 2) * width / 6)
     ax.set_xticklabels(instances)
 
     ax.set_ylabel('Średnia sprawdzonych rozwiązań')
     ax.legend()
+    ax.set_yscale('log')
     plt.xticks(rotation=-45)
 
     #plt.show()
     plt.gcf().subplots_adjust(left=0.15)
-    plt.savefig('2.5.png')
+    plt.savefig('2.5.1.png')
+
+    fig, ax = plt.subplots()
+    x = np.arange(len(instances)//2)
+
+    for i in range(6):
+        ax.bar(x + i * (width / 6), data_mean[i][5:], width / 6, yerr=data_std[i][5:], label=['S', 'G', 'R', 'RW', 'SA', 'TS'][i])
+
+    ax.set_xticks(x + (6 // 2) * width / 6)
+    ax.set_xticklabels(instances[5:])
+
+    ax.set_ylabel('Średnia sprawdzonych rozwiązań')
+    ax.legend()
+    ax.set_yscale('log')
+    plt.xticks(rotation=-45)
+    ax.legend(loc= 'lower center')
+
+    #plt.show()
+    plt.gcf().subplots_adjust(left=0.15)
+    plt.savefig('2.5.2.png')
 
 def plot_explored_solutions_in_time(data_mean, data_std):
     width = 0.6
@@ -357,7 +468,7 @@ if __name__ == "__main__":
 
         i = 0
         for instance in instances:
-            cost, steps, explored_solutions, time, init_cost, _ = read_instance(name, instance, "1")
+            cost, steps, explored_solutions, time, init_cost, _ = read_instance(name, instance, "10")
             quality = [best_solutions[i]/x for x in cost]
             init_quality = [best_solutions[i]/x for x in init_cost]
             effectiveness = np.true_divide(quality,time)
@@ -405,9 +516,9 @@ if __name__ == "__main__":
             alg_mean_explored_solutions_in_time.append(mean_explored_solutions_in_time)
             alg_std_explored_solutions_in_time.append(std_explored_solutions_in_time)
 
-
     plot_quality(alg_mean_quality, alg_std_quality)
     plot_quality_min(alg_min_quality)
+    print(alg_mean_time)
     plot_time(alg_mean_time, alg_std_time)
     plot_effectiveness(alg_mean_effectiveness, alg_std_effectiveness)
     plot_steps(alg_mean_steps, alg_std_steps)

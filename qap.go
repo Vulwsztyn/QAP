@@ -51,6 +51,7 @@ func measureTime(filename string, times int) {
 		assignmentCost, _ := calcCost(assignment, m1, m2)
 		fmt.Println("SA")
 		bestSA, costSA, stepsSA, exploreSolutionsSA, timeSA := SA(assignment, m1, m2, neighbourCount, 0.95, 10, 0.01)
+		fmt.Println(timeSA)
 		fmt.Println("Steepest")
 		bestS, costS, stepsS, exploreSolutionsS, timeS := steepest(assignment, m1, m2)
 		fmt.Println("Greedy")
@@ -64,8 +65,9 @@ func measureTime(filename string, times int) {
 		bestR, costR, exploreSolutionsR, timeR := random(timeLimit, m1, m2)
 		fmt.Println("TS")
 		bestTS, costTS, stepsTS, exploreSolutionsTS, timeTS := TS(assignment, m1, m2)
+		fmt.Println(timeTS)
 
-		SAArray = append(SArray, [5]int{costSA, stepsSA, exploreSolutionsSA, int(timeSA), assignmentCost})
+		SAArray = append(SAArray, [5]int{costSA, stepsSA, exploreSolutionsSA, int(timeSA), assignmentCost})
 		GArray = append(GArray, [5]int{costG, stepsG, exploreSolutionsG, int(timeG), assignmentCost})
 		SArray = append(SArray, [5]int{costS, stepsS, exploreSolutionsS, int(timeS), assignmentCost})
 		HArray = append(HArray, [5]int{costH, stepsH, exploreSolutionsH, int(timeH), assignmentCost})
@@ -151,7 +153,7 @@ func main() {
 	//fmt.Println(assignmentR, costR, stepsR, timeR)
 	//fmt.Println(assignmentRW, costRW, stepsRW, timeRW)
 
-	measureTime(instances[instanceIndex], 1)
+	measureTime(instances[instanceIndex], 10)
 
 	//fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 19}))
 	//fmt.Println(distance(Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, Assignment{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}))

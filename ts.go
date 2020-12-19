@@ -134,7 +134,7 @@ func TS(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int, int64)
 			//	fmt.Println("tabu")
 			//}
 			if lastUsedInStep == 0 || stepCount-lastUsedInStep > tabuListSize || v.cost < currentCost {
-				if v.cost < currentCost {
+				if v.cost < bestCost {
 					noBettermentStepCount = 0
 				}
 				currentAssignment[i], currentAssignment[j] = currentAssignment[j], currentAssignment[i]
