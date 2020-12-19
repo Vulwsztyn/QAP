@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/montanaflynn/stats"
 	"math"
 	"math/rand"
 	"time"
@@ -57,7 +56,16 @@ func sampleSpace(m1 IntMat, m2 IntMat) (c float64) {
 		_, newCost, _ := getRandomNeighbour(assignment, m1, m2, assignmentCostMatrix, assignmentCost)
 		diffs[i] = math.Abs(float64(newCost - assignmentCost))
 	}
-	percentile, _ := stats.Percentile(diffs[:], 95)
-	c = -percentile / math.Log(0.95)
+	mean := calcMean(diffs[:])
+	c = -mean / math.Log(0.95)
 	return c
+}
+
+func calcMean(input []float64) (output float64) {
+	i := 0
+	for ; i < len(input); i++ {
+		output += input[i]
+	}
+
+	return output / float64(i)
 }
