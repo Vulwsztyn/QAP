@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 instances = ["bur26d", "kra30a", "tho40", "wil50", "lipa60a", "lipa70a", "tai80a", "sko90", "sko100a", "esc128"]
-algorithms = ['S', 'G', 'H', 'R', 'RW']
+algorithms = ['S', 'G', 'H', 'R', 'RW', 'SA']
 
 
 def read_distances(alg, instance):
@@ -357,7 +357,7 @@ if __name__ == "__main__":
 
         i = 0
         for instance in instances:
-            cost, steps, explored_solutions, time, init_cost, _ = read_instance(name, instance, "10")
+            cost, steps, explored_solutions, time, init_cost, _ = read_instance(name, instance, "1")
             quality = [best_solutions[i]/x for x in cost]
             init_quality = [best_solutions[i]/x for x in init_cost]
             effectiveness = np.true_divide(quality,time)
@@ -434,7 +434,7 @@ if __name__ == "__main__":
         _, score = read_solution(instance)
         qualities = []
         dists = []
-        for alg in algorithms:
+        for alg in algorithms[:5]:
             cost, _, _, _, _, dist = read_instance(alg, instance, "300")
             qualities.append([score / x for x in cost])
             dists.append(dist)
