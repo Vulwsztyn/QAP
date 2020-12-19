@@ -27,6 +27,24 @@ func swapAssignment(assignment Assignment, i int, j int) (newAssignment Assignme
 	return
 }
 
+func reCalcCostMatrixOnly(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, indexes [2]int) IntMat {
+	costMatrix := previousCostMatrix
+	for _, j := range indexes {
+		for i := 0; i < defaultSize; i++ {
+			if i != j && !(j == indexes[1] && i == indexes[0]) {
+				//fmt.Println(previousCostMatrix)
+				//fmt.Println(costMatrix)
+				costMatrix[i][j] = m1[assignment[i]][assignment[j]] * m2[i][j]
+				costMatrix[j][i] = m1[assignment[j]][assignment[i]] * m2[j][i]
+				//fmt.Println(costMatrix)
+				//fmt.Println()
+			}
+		}
+		costMatrix[j][j] = m1[assignment[j]][assignment[j]] * m2[j][j]
+	}
+	return costMatrix
+}
+
 func calcMasterList(assignment Assignment, m1 IntMat, m2 IntMat, previousCostMatrix IntMat, previousCost int, startIndex int) (masterList [masterListSize]masterListElement) {
 	var index, iCount int
 	var allMasterListCandidates [neighbourCount]masterListElement
@@ -116,7 +134,7 @@ func TS(assignment Assignment, m1, m2 IntMat) (Assignment, int, int, int, int64)
 			//	fmt.Println("tabu")
 			//}
 			if lastUsedInStep == 0 || stepCount-lastUsedInStep > tabuListSize || v.cost < currentCost {
-				if v.cost < bestCost {
+				if v.cost < currentCost {
 					noBettermentStepCount = 0
 				}
 				currentAssignment[i], currentAssignment[j] = currentAssignment[j], currentAssignment[i]
