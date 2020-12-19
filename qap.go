@@ -43,8 +43,8 @@ func optimalAssignment() (assignment Assignment) {
 
 func measureTime(filename string, times int) {
 	m1, m2, _ := fileReader("instances/" + filename + ".dat")
-	var SAArray, SArray, GArray, HArray, RWArray, RArray [][5]int
-	var SADists, SDists, GDists, HDists, RWDists, RDists []float64
+	var SAArray, SArray, GArray, HArray, RWArray, RArray, TSArray [][5]int
+	var SADists, SDists, GDists, HDists, RWDists, RDists, TSDists []float64
 	for i := 0; i < times; i++ {
 		fmt.Println(i, "iteration...")
 		assignment := randomPermutation()
@@ -79,6 +79,7 @@ func measureTime(filename string, times int) {
 		HDists = append(HDists, distance(bestH, optimalAssignment()))
 		RWDists = append(RWDists, distance(bestRW, optimalAssignment()))
 		RDists = append(RDists, distance(bestR, optimalAssignment()))
+		TSDists = append(TSDists, distance(bestTS, optimalAssignment()))
 	}
 	writeFile("SA_"+filename+"_"+fmt.Sprintf("%d", times), SAArray, SADists)
 	writeFile("S_"+filename+"_"+fmt.Sprintf("%d", times), SArray, SDists)
@@ -86,6 +87,7 @@ func measureTime(filename string, times int) {
 	writeFile("H_"+filename+"_"+fmt.Sprintf("%d", times), HArray, HDists)
 	writeFile("RW_"+filename+"_"+fmt.Sprintf("%d", times), RWArray, RWDists)
 	writeFile("R_"+filename+"_"+fmt.Sprintf("%d", times), RArray, RDists)
+	writeFile("TS_"+filename+"_"+fmt.Sprintf("%d", times), TSArray, TSDists)
 	fmt.Println("done")
 }
 
